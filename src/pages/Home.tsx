@@ -15,6 +15,7 @@ interface product {
   _id: string,
   title: string,
   description: string,
+  img_url:string,
   price: number
 }
 
@@ -56,6 +57,8 @@ const Home: React.FC = () => {
               <ul>
                 <li >Description: {product.description}</li>
                 <li >Price: {product.price}</li>
+                <li >Image:</li>
+                <img src={product.img_url}></img>
               </ul>
             </article>
           )) : ""}
