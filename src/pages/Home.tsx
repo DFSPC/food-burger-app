@@ -19,7 +19,7 @@ interface product {
   price: number
 }
 
-const FILMS_QUERY = gql`
+const GET_BURGERS_QUERY = gql`
   query Products {
     products {
       _id
@@ -33,7 +33,7 @@ const FILMS_QUERY = gql`
 `;
 
 const Home: React.FC = () => {
-  let { data, loading, error, refetch } = useQuery(FILMS_QUERY);
+  let { data, loading, error, refetch } = useQuery(GET_BURGERS_QUERY);
   async function reloadData(event: CustomEvent<RefresherEventDetail>){
     await refetch();
     event.detail.complete();
@@ -42,7 +42,7 @@ const Home: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Food Burger</IonTitle>
+          <IonTitle>List of Burgers</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
