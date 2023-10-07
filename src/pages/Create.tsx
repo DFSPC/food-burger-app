@@ -17,7 +17,7 @@ import React, { useState } from "react";
 
 import { useMutation, gql } from "@apollo/client";
 
-const Create: React.FC = () => {
+const Create: React.FC<{ reloadData: any }> = (props) => {
     const initialValues = {
         title: "",
         description: "",
@@ -72,8 +72,8 @@ const Create: React.FC = () => {
     const createPost = async (ev: any) => {
         const data = await addBurger({ variables: values });
         if (data.data?.createProduct?._id) {
-            console.log("Force updated");
             setValues(initialValues);
+            props.reloadData();
         }
     };
 

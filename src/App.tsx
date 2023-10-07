@@ -31,34 +31,66 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
+import { useQuery, gql } from "@apollo/client";
+
 setupIonicReact();
 
-const App: React.FC = () => (
-    <IonApp>
-        <IonReactRouter>
-            <IonTabs>
-                <IonRouterOutlet>
-                    <Redirect exact path="/" to="/home" />
-                    <Route path="/home" render={() => <Home />} exact={true} />
-                    <Route
-                        path="/create"
-                        render={() => <Create />}
-                        exact={true}
-                    />
-                </IonRouterOutlet>
+const GET_BURGERS_QUERY = gql`
+    query Products {
+        products {
+            _id
+            title
+            description
+            img_url
+            price
+            featured
+        }
+    }
+`;
 
-                <IonTabBar slot="top">
-                    <IonTabButton tab="home" href="/home">
-                        <IonLabel>Burgers</IonLabel>
-                    </IonTabButton>
+const App: React.FC = () => {
+    let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
+    async function reloadData() {
+        await refetch();
+    }
 
-                    <IonTabButton tab="create" href="/create">
-                        <IonLabel>Create</IonLabel>
-                    </IonTabButton>
-                </IonTabBar>
-            </IonTabs>
-        </IonReactRouter>
-    </IonApp>
-);
+    return (
+        <IonApp>
+            <IonReactRouter>
+                <IonTabs>
+                    <IonRouterOutlet>
+                        <Redirect exact path="/" to="/home" />
+                        <Route
+                            path="/home"
+                            render={() => (
+                                <Home
+                                    reloadData={reloadData}
+                                    data={data}
+                                    loading={loading}
+                                />
+                            )}
+                            exact={true}
+                        />
+                        <Route
+                            path="/create"
+                            render={() => <Create reloadData={reloadData} />}
+                            exact={true}
+                        />
+                    </IonRouterOutlet>
+
+                    <IonTabBar slot="top">
+                        <IonTabButton tab="home" href="/home">
+                            <IonLabel>Burgers</IonLabel>
+                        </IonTabButton>
+
+                        <IonTabButton tab="create" href="/create">
+                            <IonLabel>Create</IonLabel>
+                        </IonTabButton>
+                    </IonTabBar>
+                </IonTabs>
+            </IonReactRouter>
+        </IonApp>
+    );
+};
 
 export default App;
