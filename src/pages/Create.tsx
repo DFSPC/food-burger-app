@@ -8,14 +8,15 @@ import {
     IonPage,
     IonTitle,
     IonToolbar,
-    IonList,
-    IonLabel
+    IonList
 } from "@ionic/react";
 import "./Home.css";
 
 import React, { useState } from "react";
 
 import { useMutation, gql } from "@apollo/client";
+
+import { useHistory } from "react-router-dom";
 
 const Create: React.FC<{ reloadData: any }> = (props) => {
     const initialValues = {
@@ -52,6 +53,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
     `;
 
     const [values, setValues] = useState(initialValues);
+    const history = useHistory();
 
     const [addBurger, { data, loading, error }] =
         useMutation(CREATE_BURGERS_QUERY);
@@ -74,6 +76,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
         if (data.data?.createProduct?._id) {
             setValues(initialValues);
             props.reloadData();
+            history.push("/home");
         }
     };
 
@@ -110,7 +113,6 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                {data?.createProduct?._id ? <p>Created Burger</p> : ""}
                 {error ? <pre>{error.message}</pre> : ""}
                 {loading ? (
                     <p>Creating...</p>
@@ -156,7 +158,6 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
                             </IonItem>
 
                             <IonItem>
-                                <IonLabel>Image:</IonLabel>
                                 <input
                                     name="image"
                                     type="file"

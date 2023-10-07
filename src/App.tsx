@@ -65,7 +65,11 @@ const App: React.FC = () => {
                         <Route
                             path="/home"
                             render={() => (
-                                <Home reloadData={reloadData} data={data} />
+                                <Home
+                                    reloadData={reloadData}
+                                    dataBurgers={data}
+                                    loadingBurgers={loading}
+                                />
                             )}
                             exact={true}
                         />
