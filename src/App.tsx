@@ -1,6 +1,7 @@
 import { Redirect, Route } from "react-router-dom";
 import {
     IonApp,
+    IonIcon,
     IonTabs,
     IonTabBar,
     IonLabel,
@@ -8,6 +9,7 @@ import {
     IonRouterOutlet,
     setupIonicReact
 } from "@ionic/react";
+import { list, add } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
@@ -63,11 +65,7 @@ const App: React.FC = () => {
                         <Route
                             path="/home"
                             render={() => (
-                                <Home
-                                    reloadData={reloadData}
-                                    data={data}
-                                    loading={loading}
-                                />
+                                <Home reloadData={reloadData} data={data} />
                             )}
                             exact={true}
                         />
@@ -80,10 +78,12 @@ const App: React.FC = () => {
 
                     <IonTabBar slot="top">
                         <IonTabButton tab="home" href="/home">
+                            <IonIcon icon={list} />
                             <IonLabel>Burgers</IonLabel>
                         </IonTabButton>
 
                         <IonTabButton tab="create" href="/create">
+                            <IonIcon icon={add} />
                             <IonLabel>Create</IonLabel>
                         </IonTabButton>
                     </IonTabBar>

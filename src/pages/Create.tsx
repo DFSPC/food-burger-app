@@ -69,7 +69,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
         });
     };
 
-    const createPost = async (ev: any) => {
+    const createBurger = async (ev: any) => {
         const data = await addBurger({ variables: values });
         if (data.data?.createProduct?._id) {
             setValues(initialValues);
@@ -169,7 +169,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
                             type="button"
                             color="primary"
                             expand="full"
-                            onClick={(ev) => createPost(ev)}
+                            onClick={(ev) => createBurger(ev)}
                         >
                             Create
                         </IonButton>
