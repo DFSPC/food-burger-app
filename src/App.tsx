@@ -1,12 +1,12 @@
 import { Redirect, Route } from "react-router-dom";
 import {
-  IonApp,
-  IonTabs,
-  IonTabBar,
-  IonLabel,
-  IonTabButton,
-  IonRouterOutlet,
-  setupIonicReact,
+    IonApp,
+    IonTabs,
+    IonTabBar,
+    IonLabel,
+    IonTabButton,
+    IonRouterOutlet,
+    setupIonicReact
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
@@ -34,27 +34,31 @@ import "./theme/variables.css";
 setupIonicReact();
 
 const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Redirect exact path="/" to="/home" />
-          <Route path="/home" render={() => <Home />} exact={true} />
-          <Route path="/create" render={() => <Create />} exact={true} />
-        </IonRouterOutlet>
+    <IonApp>
+        <IonReactRouter>
+            <IonTabs>
+                <IonRouterOutlet>
+                    <Redirect exact path="/" to="/home" />
+                    <Route path="/home" render={() => <Home />} exact={true} />
+                    <Route
+                        path="/create"
+                        render={() => <Create />}
+                        exact={true}
+                    />
+                </IonRouterOutlet>
 
-        <IonTabBar slot="top">
-          <IonTabButton tab="home" href="/home">
-            <IonLabel>Burgers</IonLabel>
-          </IonTabButton>
+                <IonTabBar slot="top">
+                    <IonTabButton tab="home" href="/home">
+                        <IonLabel>Burgers</IonLabel>
+                    </IonTabButton>
 
-          <IonTabButton tab="create" href="/create">
-            <IonLabel>Create</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
+                    <IonTabButton tab="create" href="/create">
+                        <IonLabel>Create</IonLabel>
+                    </IonTabButton>
+                </IonTabBar>
+            </IonTabs>
+        </IonReactRouter>
+    </IonApp>
 );
 
 export default App;
