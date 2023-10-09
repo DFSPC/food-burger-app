@@ -18,14 +18,14 @@ import { useMutation, gql } from "@apollo/client";
 
 import { useHistory } from "react-router-dom";
 
-const Create: React.FC<{ reloadData: any }> = (props) => {
-    const initialValues = {
-        title: "",
-        description: "",
-        price: "",
-        featured: false,
-        imgUrl: ""
-    };
+const CreateUpdate: React.FC<{
+    action: string;
+    reloadData: any;
+    productValues: any;
+    setProductValues: Function;
+}> = (props) => {
+    const title = props.action == "create" ? "Create Burger" : "Edit Burger";
+    const labelAction = props.action == "create" ? "Create" : "Edit";
 
     const CREATE_BURGERS_QUERY = gql`
         mutation CreateProduct(
@@ -52,7 +52,14 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
         }
     `;
 
-    const [values, setValues] = useState(initialValues);
+    const emptyProduct = {
+        title: "",
+        description: "",
+        price: "",
+        featured: false,
+        imgUrl: ""
+    };
+
     const history = useHistory();
 
     const [addBurger, { data, loading, error }] =
@@ -72,9 +79,9 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
     };
 
     const createBurger = async (ev: any) => {
-        const data = await addBurger({ variables: values });
+        const data = await addBurger({ variables: props.productValues });
         if (data.data?.createProduct?._id) {
-            setValues(initialValues);
+            props.setProductValues(emptyProduct);
             props.reloadData();
             history.push("/home");
         }
@@ -83,33 +90,38 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
     const onFileChange = async (ev: any) => {
         const file = ev.target.files[0];
         const base64 = await convertBase64(file);
-        setValues({
-            ...values,
+        props.setProductValues({
+            ...props.productValues,
             ["imgUrl"]: base64 as string
         });
     };
 
     const handleInputChange = (ev: any) => {
         const { name, value, checked } = ev.target;
+        console.log("checked", checked);
         let sendValue: any;
-        if (checked) {
+        if (checked == true) {
+            sendValue = checked;
+        } else if (checked == false) {
             sendValue = checked;
         } else if (isNaN(value)) {
             sendValue = value;
         } else {
             sendValue = parseFloat(value);
         }
-        setValues((previousValues) => ({
+        props.setProductValues((previousValues: any) => ({
             ...previousValues,
             [name]: sendValue
         }));
     };
 
+    console.log("props.productValues", props.productValues);
+
     return (
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Create Burger</IonTitle>
+                    <IonTitle>{title}</IonTitle>
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
@@ -121,7 +133,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
                         <IonList>
                             <IonItem>
                                 <IonInput
-                                    value={values.title}
+                                    value={props.productValues.title}
                                     onIonChange={handleInputChange}
                                     name="title"
                                     label="Title:"
@@ -130,28 +142,26 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
 
                             <IonItem>
                                 <IonInput
-                                    value={values.description}
+                                    value={props.productValues.description}
                                     onIonChange={handleInputChange}
                                     name="description"
                                     label="Description:"
                                 ></IonInput>
                             </IonItem>
-
                             <IonItem>
                                 <IonInput
-                                    value={values.price}
+                                    value={props.productValues.price}
                                     onIonChange={handleInputChange}
                                     name="price"
                                     label="Price:"
                                     type="number"
                                 ></IonInput>
                             </IonItem>
-
                             <IonItem>
                                 <IonCheckbox
-                                    value={values.featured}
                                     onIonChange={handleInputChange}
                                     name="featured"
+                                    checked={props.productValues.featured}
                                 >
                                     Featured?
                                 </IonCheckbox>
@@ -172,7 +182,7 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
                             expand="full"
                             onClick={(ev) => createBurger(ev)}
                         >
-                            Create
+                            {labelAction}
                         </IonButton>
                     </form>
                 )}
@@ -181,4 +191,4 @@ const Create: React.FC<{ reloadData: any }> = (props) => {
     );
 };
 
-export default Create;
+export default CreateUpdate;

@@ -12,7 +12,7 @@ import {
 import { list, add } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
-import Create from "./pages/Create";
+import Create from "./pages/CreateUpdate";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -33,6 +33,8 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
+import React, { useState } from "react";
+
 import { useQuery, gql } from "@apollo/client";
 
 setupIonicReact();
@@ -52,6 +54,17 @@ const GET_BURGERS_QUERY = gql`
 
 const App: React.FC = () => {
     let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
+
+    const emptyProduct = {
+        title: "",
+        description: "",
+        price: "",
+        featured: false,
+        imgUrl: ""
+    };
+
+    const [productValues, setProductValues] = useState(emptyProduct);
+
     async function reloadData() {
         await refetch();
     }
@@ -69,24 +82,48 @@ const App: React.FC = () => {
                                     reloadData={reloadData}
                                     dataBurgers={data}
                                     loadingBurgers={loading}
+                                    setProductValues={setProductValues}
                                 />
                             )}
                             exact={true}
                         />
                         <Route
                             path="/create"
-                            render={() => <Create reloadData={reloadData} />}
+                            render={() => (
+                                <Create
+                                    action={"create"}
+                                    reloadData={reloadData}
+                                    productValues={productValues}
+                                    setProductValues={setProductValues}
+                                />
+                            )}
+                            exact={true}
+                        />
+                        <Route
+                            path="/update"
+                            render={() => (
+                                <Create
+                                    action={"update"}
+                                    reloadData={reloadData}
+                                    productValues={productValues}
+                                    setProductValues={setProductValues}
+                                />
+                            )}
                             exact={true}
                         />
                     </IonRouterOutlet>
 
-                    <IonTabBar slot="top">
+                    <IonTabBar slot="bottom">
                         <IonTabButton tab="home" href="/home">
                             <IonIcon icon={list} />
                             <IonLabel>Burgers</IonLabel>
                         </IonTabButton>
 
-                        <IonTabButton tab="create" href="/create">
+                        <IonTabButton
+                            tab="create"
+                            href="/create"
+                            onClick={(ev) => setProductValues(emptyProduct)}
+                        >
                             <IonIcon icon={add} />
                             <IonLabel>Create</IonLabel>
                         </IonTabButton>

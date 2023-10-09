@@ -21,6 +21,8 @@ import "./Home.css";
 
 import { useMutation, gql } from "@apollo/client";
 
+import { useHistory } from "react-router-dom";
+
 interface product {
     _id: string;
     title: string;
@@ -33,7 +35,10 @@ const Home: React.FC<{
     reloadData: Function;
     dataBurgers: any;
     loadingBurgers: boolean;
+    setProductValues: Function;
 }> = (props) => {
+    const history = useHistory();
+
     const reload = (event: CustomEvent<RefresherEventDetail>) => {
         props.reloadData();
         event.detail.complete();
@@ -45,12 +50,15 @@ const Home: React.FC<{
         }
     `;
 
+    const editBurger = async (product: product) => {
+        props.setProductValues(product);
+        history.push("/update");
+    };
+
     const [deleteBurger, { data, loading, error }] =
         useMutation(DELETE_BURGER_QUERY);
 
     const removeBurger = async (id: string) => {
-        console.log("Delete");
-        console.log("Id", id);
         const data = await deleteBurger({ variables: { id: id } });
         if (data.data?.deleteProduct) {
             props.reloadData();
@@ -102,6 +110,11 @@ const Home: React.FC<{
                                                           <IonButton
                                                               color="primary"
                                                               expand="full"
+                                                              onClick={(ev) =>
+                                                                  editBurger(
+                                                                      product
+                                                                  )
+                                                              }
                                                           >
                                                               Edit
                                                           </IonButton>
