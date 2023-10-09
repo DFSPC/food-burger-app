@@ -25,19 +25,22 @@ const CreateUpdate: React.FC<{
     setProductValues: Function;
 }> = (props) => {
     const title = props.action == "create" ? "Create Burger" : "Edit Burger";
+    const status = props.action == "create" ? "Creating..." : "Editing...";
     const labelAction = props.action == "create" ? "Create" : "Edit";
 
     const CREATE_BURGERS_QUERY = gql`
         mutation CreateProduct(
             $title: String!
-            $imgUrl: String!
+            $img_blob: String
+            $img_url: String
             $price: Float!
             $featured: Boolean!
             $description: String!
         ) {
             createProduct(
                 title: $title
-                img_url: $imgUrl
+                img_blob: $img_blob
+                img_url: $img_url
                 price: $price
                 featured: $featured
                 description: $description
@@ -45,6 +48,7 @@ const CreateUpdate: React.FC<{
                 _id
                 description
                 featured
+                img_blob
                 img_url
                 price
                 title
@@ -52,18 +56,55 @@ const CreateUpdate: React.FC<{
         }
     `;
 
+    const UPDATE_BURGER_QUERY = gql`
+        mutation UpdateProduct(
+            $_id: ID!
+            $title: String!
+            $description: String!
+            $price: Float!
+            $featured: Boolean!
+            $img_blob: String
+            $img_url: String
+        ) {
+            updateProduct(
+                _id: $_id
+                title: $title
+                description: $description
+                price: $price
+                featured: $featured
+                img_blob: $img_blob
+                img_url: $img_url
+            ) {
+                _id
+                title
+                description
+                img_blob
+                img_url
+                price
+                featured
+            }
+        }
+    `;
+
     const emptyProduct = {
+        _id: "",
         title: "",
         description: "",
         price: "",
         featured: false,
-        imgUrl: ""
+        img_url: "",
+        img_blob: ""
     };
 
     const history = useHistory();
 
-    const [addBurger, { data, loading, error }] =
+    const [addBurger, { data: dataAdd, loading: loadingAdd, error: errorAdd }] =
         useMutation(CREATE_BURGERS_QUERY);
+
+    const [
+        editBurger,
+        { data: dataEdit, loading: loadingEdit, error: errorEdit }
+    ] = useMutation(UPDATE_BURGER_QUERY);
 
     const convertBase64 = async (file: any) => {
         return new Promise((resolve, reject) => {
@@ -78,9 +119,15 @@ const CreateUpdate: React.FC<{
         });
     };
 
-    const createBurger = async (ev: any) => {
-        const data = await addBurger({ variables: props.productValues });
-        if (data.data?.createProduct?._id) {
+    const createUpdateBurger = async (ev: any) => {
+        let data: any;
+        if (props.action == "create") {
+            data = await addBurger({ variables: props.productValues });
+        } else {
+            console.log("EDDITT", props.productValues);
+            data = await editBurger({ variables: props.productValues });
+        }
+        if (data.data?.createProduct?._id || data.data?.updateProduct?._id) {
             props.setProductValues(emptyProduct);
             props.reloadData();
             history.push("/home");
@@ -92,13 +139,12 @@ const CreateUpdate: React.FC<{
         const base64 = await convertBase64(file);
         props.setProductValues({
             ...props.productValues,
-            ["imgUrl"]: base64 as string
+            ["img_blob"]: base64 as string
         });
     };
 
     const handleInputChange = (ev: any) => {
         const { name, value, checked } = ev.target;
-        console.log("checked", checked);
         let sendValue: any;
         if (checked == true) {
             sendValue = checked;
@@ -125,9 +171,10 @@ const CreateUpdate: React.FC<{
                 </IonToolbar>
             </IonHeader>
             <IonContent className="ion-padding">
-                {error ? <pre>{error.message}</pre> : ""}
-                {loading ? (
-                    <p>Creating...</p>
+                {errorAdd ? <pre>{errorAdd.message}</pre> : ""}
+                {errorEdit ? <pre>{errorEdit.message}</pre> : ""}
+                {loadingAdd || loadingEdit ? (
+                    <p>{status}</p>
                 ) : (
                     <form>
                         <IonList>
@@ -180,7 +227,7 @@ const CreateUpdate: React.FC<{
                             type="button"
                             color="primary"
                             expand="full"
-                            onClick={(ev) => createBurger(ev)}
+                            onClick={(ev) => createUpdateBurger(ev)}
                         >
                             {labelAction}
                         </IonButton>

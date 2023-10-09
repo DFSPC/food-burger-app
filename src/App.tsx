@@ -56,11 +56,13 @@ const App: React.FC = () => {
     let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
 
     const emptyProduct = {
+        _id: "",
         title: "",
         description: "",
         price: "",
         featured: false,
-        imgUrl: ""
+        img_url: "",
+        img_blob: ""
     };
 
     const [productValues, setProductValues] = useState(emptyProduct);
