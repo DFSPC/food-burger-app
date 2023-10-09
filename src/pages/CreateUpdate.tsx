@@ -148,7 +148,7 @@ const CreateUpdate: React.FC<{
             sendValue = checked;
         } else if (checked == false) {
             sendValue = checked;
-        } else if (isNaN(value)) {
+        } else if (isNaN(value) || value == "") {
             sendValue = value;
         } else {
             sendValue = parseFloat(value);

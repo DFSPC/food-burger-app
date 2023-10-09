@@ -9,7 +9,7 @@ import {
     IonRouterOutlet,
     setupIonicReact
 } from "@ionic/react";
-import { list, add, person, personAdd } from "ionicons/icons";
+import { list, add, logIn, personAdd, logOut } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import CreateUpdate from "./pages/CreateUpdate";
@@ -39,6 +39,8 @@ import React, { useState } from "react";
 
 import { useQuery, gql } from "@apollo/client";
 
+import { useHistory } from "react-router-dom";
+
 setupIonicReact();
 
 const GET_BURGERS_QUERY = gql`
@@ -56,6 +58,7 @@ const GET_BURGERS_QUERY = gql`
 
 const App: React.FC = () => {
     let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
+    const history = useHistory();
 
     const emptyProduct = {
         _id: "",
@@ -71,6 +74,7 @@ const App: React.FC = () => {
         _id: "",
         fullname: "",
         email: "",
+        password: "",
         cellphone: "",
         rol: "",
         token: ""
@@ -132,7 +136,12 @@ const App: React.FC = () => {
                         />
                         <Route
                             path="/register"
-                            render={() => <Register />}
+                            render={() => (
+                                <Register
+                                    userValues={userValues}
+                                    setUserValues={setUserValues}
+                                />
+                            )}
                             exact={true}
                         />
                     </IonRouterOutlet>
@@ -152,11 +161,16 @@ const App: React.FC = () => {
                                 <IonIcon icon={add} />
                                 <IonLabel>Create</IonLabel>
                             </IonTabButton>
+
+                            <IonTabButton href="/login">
+                                <IonIcon icon={logOut} />
+                                <IonLabel>Log Out</IonLabel>
+                            </IonTabButton>
                         </IonTabBar>
                     ) : (
                         <IonTabBar slot="bottom">
                             <IonTabButton tab="login" href="/login">
-                                <IonIcon icon={person} />
+                                <IonIcon icon={logIn} />
                                 <IonLabel>Login</IonLabel>
                             </IonTabButton>
 
