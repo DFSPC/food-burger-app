@@ -9,10 +9,12 @@ import {
     IonRouterOutlet,
     setupIonicReact
 } from "@ionic/react";
-import { list, add } from "ionicons/icons";
+import { list, add, person, personAdd } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
-import Create from "./pages/CreateUpdate";
+import CreateUpdate from "./pages/CreateUpdate";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -65,7 +67,17 @@ const App: React.FC = () => {
         img_blob: ""
     };
 
+    const emptyUser = {
+        _id: "",
+        fullname: "",
+        email: "",
+        cellphone: "",
+        rol: "",
+        token: ""
+    };
+
     const [productValues, setProductValues] = useState(emptyProduct);
+    const [userValues, setUserValues] = useState(emptyUser);
 
     async function reloadData() {
         await refetch();
@@ -76,7 +88,7 @@ const App: React.FC = () => {
             <IonReactRouter>
                 <IonTabs>
                     <IonRouterOutlet>
-                        <Redirect exact path="/" to="/home" />
+                        <Redirect exact path="/" to="/login" />
                         <Route
                             path="/home"
                             render={() => (
@@ -92,7 +104,7 @@ const App: React.FC = () => {
                         <Route
                             path="/create"
                             render={() => (
-                                <Create
+                                <CreateUpdate
                                     action={"create"}
                                     reloadData={reloadData}
                                     productValues={productValues}
@@ -104,7 +116,7 @@ const App: React.FC = () => {
                         <Route
                             path="/update"
                             render={() => (
-                                <Create
+                                <CreateUpdate
                                     action={"update"}
                                     reloadData={reloadData}
                                     productValues={productValues}
@@ -113,23 +125,51 @@ const App: React.FC = () => {
                             )}
                             exact={true}
                         />
+                        <Route
+                            path="/login"
+                            render={() => <Login />}
+                            exact={true}
+                        />
+                        <Route
+                            path="/register"
+                            render={() => <Register />}
+                            exact={true}
+                        />
                     </IonRouterOutlet>
 
-                    <IonTabBar slot="bottom">
-                        <IonTabButton tab="home" href="/home">
-                            <IonIcon icon={list} />
-                            <IonLabel>Burgers</IonLabel>
-                        </IonTabButton>
+                    {userValues.token ? (
+                        <IonTabBar slot="bottom">
+                            <IonTabButton tab="home" href="/home">
+                                <IonIcon icon={list} />
+                                <IonLabel>Burgers</IonLabel>
+                            </IonTabButton>
 
-                        <IonTabButton
-                            tab="create"
-                            href="/create"
-                            onClick={(ev) => setProductValues(emptyProduct)}
-                        >
-                            <IonIcon icon={add} />
-                            <IonLabel>Create</IonLabel>
-                        </IonTabButton>
-                    </IonTabBar>
+                            <IonTabButton
+                                tab="create"
+                                href="/create"
+                                onClick={(ev) => setProductValues(emptyProduct)}
+                            >
+                                <IonIcon icon={add} />
+                                <IonLabel>Create</IonLabel>
+                            </IonTabButton>
+                        </IonTabBar>
+                    ) : (
+                        <IonTabBar slot="bottom">
+                            <IonTabButton tab="login" href="/login">
+                                <IonIcon icon={person} />
+                                <IonLabel>Login</IonLabel>
+                            </IonTabButton>
+
+                            <IonTabButton
+                                tab="register"
+                                href="/register"
+                                onClick={(ev) => setProductValues(emptyProduct)}
+                            >
+                                <IonIcon icon={personAdd} />
+                                <IonLabel>Register</IonLabel>
+                            </IonTabButton>
+                        </IonTabBar>
+                    )}
                 </IonTabs>
             </IonReactRouter>
         </IonApp>

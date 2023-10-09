@@ -10,7 +10,6 @@ import {
     IonToolbar,
     IonList
 } from "@ionic/react";
-import "./Home.css";
 
 import React, { useState } from "react";
 

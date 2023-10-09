@@ -17,7 +17,6 @@ import {
     IonCol,
     IonGrid
 } from "@ionic/react";
-import "./Home.css";
 
 import { useMutation, gql } from "@apollo/client";
 
