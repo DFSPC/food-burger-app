@@ -124,7 +124,6 @@ const CreateUpdate: React.FC<{
         if (props.action == "create") {
             data = await addBurger({ variables: props.productValues });
         } else {
-            console.log("EDDITT", props.productValues);
             data = await editBurger({ variables: props.productValues });
         }
         if (data.data?.createProduct?._id || data.data?.updateProduct?._id) {
@@ -161,8 +160,6 @@ const CreateUpdate: React.FC<{
         }));
     };
 
-    console.log("props.productValues", props.productValues);
-
     return (
         <IonPage>
             <IonHeader>
@@ -181,7 +178,7 @@ const CreateUpdate: React.FC<{
                             <IonItem>
                                 <IonInput
                                     value={props.productValues.title}
-                                    onIonChange={handleInputChange}
+                                    onIonInput={handleInputChange}
                                     name="title"
                                     label="Title:"
                                 ></IonInput>
@@ -190,7 +187,7 @@ const CreateUpdate: React.FC<{
                             <IonItem>
                                 <IonInput
                                     value={props.productValues.description}
-                                    onIonChange={handleInputChange}
+                                    onIonInput={handleInputChange}
                                     name="description"
                                     label="Description:"
                                 ></IonInput>
@@ -198,7 +195,7 @@ const CreateUpdate: React.FC<{
                             <IonItem>
                                 <IonInput
                                     value={props.productValues.price}
-                                    onIonChange={handleInputChange}
+                                    onIonInput={handleInputChange}
                                     name="price"
                                     label="Price:"
                                     type="number"
