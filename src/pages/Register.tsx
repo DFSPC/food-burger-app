@@ -20,16 +20,16 @@ const Register: React.FC<{
     const history = useHistory();
 
     const handleInputChange = (ev: any) => {
-        const { name, value, checked } = ev.target;
+        const { name, value, checked, type } = ev.target;
         let sendValue: any;
         if (checked == true) {
             sendValue = checked;
         } else if (checked == false) {
             sendValue = checked;
-        } else if (isNaN(value) || value == "") {
-            sendValue = value;
-        } else {
+        } else if (type == "number") {
             sendValue = parseFloat(value);
+        } else {
+            sendValue = value;
         }
         props.setUserValues((previousValues: any) => ({
             ...previousValues,

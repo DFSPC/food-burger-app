@@ -35,6 +35,8 @@ const Home: React.FC<{
     dataBurgers: any;
     loadingBurgers: boolean;
     setProductValues: Function;
+    userValues: any;
+    setUserValues: Function;
 }> = (props) => {
     const history = useHistory();
 
@@ -103,60 +105,70 @@ const Home: React.FC<{
                                                   <li>Image:</li>
                                               </ul>
                                               <img src={product.img_url}></img>
-                                              <IonGrid>
-                                                  <IonRow>
-                                                      <IonCol class="ion-text-center">
-                                                          <IonButton
-                                                              color="primary"
-                                                              expand="full"
-                                                              onClick={(ev) =>
-                                                                  editBurger(
-                                                                      product
-                                                                  )
+                                              {props.userValues.rol ==
+                                              "admin" ? (
+                                                  <>
+                                                      <IonGrid>
+                                                          <IonRow>
+                                                              <IonCol class="ion-text-center">
+                                                                  <IonButton
+                                                                      color="primary"
+                                                                      expand="full"
+                                                                      onClick={(
+                                                                          ev
+                                                                      ) =>
+                                                                          editBurger(
+                                                                              product
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      Edit
+                                                                  </IonButton>
+                                                              </IonCol>
+                                                              <IonCol class="ion-text-center">
+                                                                  <IonButton
+                                                                      id={`delete-alert-${product._id}`}
+                                                                      color="primary"
+                                                                      expand="full"
+                                                                  >
+                                                                      Delete
+                                                                  </IonButton>
+                                                              </IonCol>
+                                                          </IonRow>
+                                                      </IonGrid>
+                                                      <IonAlert
+                                                          header="Delete Burger?"
+                                                          trigger={`delete-alert-${product._id}`}
+                                                          buttons={[
+                                                              {
+                                                                  text: "Cancel",
+                                                                  role: "cancel",
+                                                                  handler:
+                                                                      () => {
+                                                                          return false;
+                                                                      }
+                                                              },
+                                                              {
+                                                                  text: "OK",
+                                                                  role: "confirm",
+                                                                  handler:
+                                                                      () => {
+                                                                          removeBurger(
+                                                                              product._id
+                                                                          );
+                                                                      }
                                                               }
-                                                          >
-                                                              Edit
-                                                          </IonButton>
-                                                      </IonCol>
-                                                      <IonCol class="ion-text-center">
-                                                          <IonButton
-                                                              id={`delete-alert-${product._id}`}
-                                                              color="primary"
-                                                              expand="full"
-                                                          >
-                                                              Delete
-                                                          </IonButton>
-                                                      </IonCol>
-                                                  </IonRow>
-                                              </IonGrid>
-
-                                              <IonAlert
-                                                  header="Delete Burger?"
-                                                  trigger={`delete-alert-${product._id}`}
-                                                  buttons={[
-                                                      {
-                                                          text: "Cancel",
-                                                          role: "cancel",
-                                                          handler: () => {
+                                                          ]}
+                                                          onDidDismiss={({
+                                                              detail
+                                                          }) => {
                                                               return false;
-                                                          }
-                                                      },
-                                                      {
-                                                          text: "OK",
-                                                          role: "confirm",
-                                                          handler: () => {
-                                                              removeBurger(
-                                                                  product._id
-                                                              );
-                                                          }
-                                                      }
-                                                  ]}
-                                                  onDidDismiss={({
-                                                      detail
-                                                  }) => {
-                                                      return false;
-                                                  }}
-                                              ></IonAlert>
+                                                          }}
+                                                      ></IonAlert>
+                                                  </>
+                                              ) : (
+                                                  ""
+                                              )}
                                           </div>
                                       </IonAccordion>
                                   )

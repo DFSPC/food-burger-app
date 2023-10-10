@@ -58,7 +58,6 @@ const GET_BURGERS_QUERY = gql`
 
 const App: React.FC = () => {
     let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
-    const history = useHistory();
 
     const emptyProduct = {
         _id: "",
@@ -86,7 +85,7 @@ const App: React.FC = () => {
     async function reloadData() {
         await refetch();
     }
-
+    console.log("userValues", userValues);
     return (
         <IonApp>
             <IonReactRouter>
@@ -101,6 +100,8 @@ const App: React.FC = () => {
                                     dataBurgers={data}
                                     loadingBurgers={loading}
                                     setProductValues={setProductValues}
+                                    userValues={userValues}
+                                    setUserValues={setUserValues}
                                 />
                             )}
                             exact={true}
@@ -131,7 +132,12 @@ const App: React.FC = () => {
                         />
                         <Route
                             path="/login"
-                            render={() => <Login />}
+                            render={() => (
+                                <Login
+                                    userValues={userValues}
+                                    setUserValues={setUserValues}
+                                />
+                            )}
                             exact={true}
                         />
                         <Route
@@ -152,17 +158,25 @@ const App: React.FC = () => {
                                 <IonIcon icon={list} />
                                 <IonLabel>Burgers</IonLabel>
                             </IonTabButton>
-
+                            {userValues.rol == "admin" ? (
+                                <IonTabButton
+                                    tab="create"
+                                    href="/create"
+                                    onClick={(ev) =>
+                                        setProductValues(emptyProduct)
+                                    }
+                                >
+                                    <IonIcon icon={add} />
+                                    <IonLabel>Create</IonLabel>
+                                </IonTabButton>
+                            ) : (
+                                <></>
+                            )}
                             <IonTabButton
-                                tab="create"
-                                href="/create"
-                                onClick={(ev) => setProductValues(emptyProduct)}
+                                tab="login"
+                                href="/login"
+                                onClick={(ev) => setUserValues(emptyUser)}
                             >
-                                <IonIcon icon={add} />
-                                <IonLabel>Create</IonLabel>
-                            </IonTabButton>
-
-                            <IonTabButton href="/login">
                                 <IonIcon icon={logOut} />
                                 <IonLabel>Log Out</IonLabel>
                             </IonTabButton>
@@ -174,11 +188,7 @@ const App: React.FC = () => {
                                 <IonLabel>Login</IonLabel>
                             </IonTabButton>
 
-                            <IonTabButton
-                                tab="register"
-                                href="/register"
-                                onClick={(ev) => setProductValues(emptyProduct)}
-                            >
+                            <IonTabButton tab="register" href="/register">
                                 <IonIcon icon={personAdd} />
                                 <IonLabel>Register</IonLabel>
                             </IonTabButton>
