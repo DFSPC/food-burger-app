@@ -68,7 +68,7 @@ const Login: React.FC<{
             <IonContent className="ion-padding">
                 {error ? <pre>{error.message}</pre> : ""}
                 {loading ? (
-                    <p>Register...</p>
+                    <p>Login...</p>
                 ) : (
                     <form>
                         <IonList>

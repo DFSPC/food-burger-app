@@ -4,7 +4,7 @@ import App from "./App";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 
 const client = new ApolloClient({
-    uri: "http://localhost:3000/api",
+    uri: "https://food-burger.vercel.app/api",
     cache: new InMemoryCache()
 });
 
