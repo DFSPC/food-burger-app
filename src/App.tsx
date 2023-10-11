@@ -37,8 +37,6 @@ import "./theme/variables.css";
 
 import React, { useState } from "react";
 
-import { useLazyQuery, gql } from "@apollo/client";
-
 setupIonicReact();
 
 const App: React.FC = () => {
