@@ -37,7 +37,6 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
 
 setupIonicReact();
 
