@@ -1,89 +1,27 @@
 import {
     IonButton,
     IonCheckbox,
-    IonContent,
-    IonHeader,
     IonItem,
     IonInput,
-    IonPage,
-    IonTitle,
-    IonToolbar,
     IonList
 } from "@ionic/react";
 
-import React, { useState } from "react";
+import React from "react";
+import BasePage from "./../BasePage";
 
-import { useMutation, gql } from "@apollo/client";
+import { useMutation } from "@apollo/client";
+import { CREATE_BURGERS_QUERY, UPDATE_BURGER_QUERY } from "./../GraphQL";
 
 import { useHistory } from "react-router-dom";
 
 const CreateUpdate: React.FC<{
     action: string;
-    getBurgers: Function;
-    productValues: any;
-    setProductValues: Function;
+    burgerValues: any;
+    setBurgerValues: Function;
 }> = (props) => {
     const title = props.action == "create" ? "Create Burger" : "Edit Burger";
     const status = props.action == "create" ? "Creating..." : "Editing...";
     const labelAction = props.action == "create" ? "Create" : "Edit";
-
-    const CREATE_BURGERS_QUERY = gql`
-        mutation CreateProduct(
-            $title: String!
-            $img_blob: String
-            $img_url: String
-            $price: Float!
-            $featured: Boolean!
-            $description: String!
-        ) {
-            createProduct(
-                title: $title
-                img_blob: $img_blob
-                img_url: $img_url
-                price: $price
-                featured: $featured
-                description: $description
-            ) {
-                _id
-                description
-                featured
-                img_blob
-                img_url
-                price
-                title
-            }
-        }
-    `;
-
-    const UPDATE_BURGER_QUERY = gql`
-        mutation UpdateProduct(
-            $_id: ID!
-            $title: String!
-            $description: String!
-            $price: Float!
-            $featured: Boolean!
-            $img_blob: String
-            $img_url: String
-        ) {
-            updateProduct(
-                _id: $_id
-                title: $title
-                description: $description
-                price: $price
-                featured: $featured
-                img_blob: $img_blob
-                img_url: $img_url
-            ) {
-                _id
-                title
-                description
-                img_blob
-                img_url
-                price
-                featured
-            }
-        }
-    `;
 
     const emptyProduct = {
         _id: "",
@@ -121,13 +59,12 @@ const CreateUpdate: React.FC<{
     const createUpdateBurger = async (ev: any) => {
         let data: any;
         if (props.action == "create") {
-            data = await addBurger({ variables: props.productValues });
+            data = await addBurger({ variables: props.burgerValues });
         } else {
-            data = await editBurger({ variables: props.productValues });
+            data = await editBurger({ variables: props.burgerValues });
         }
         if (data.data?.createProduct?._id || data.data?.updateProduct?._id) {
-            props.setProductValues(emptyProduct);
-            props.getBurgers();
+            props.setBurgerValues(emptyProduct);
             history.push("/home");
         }
     };
@@ -135,8 +72,8 @@ const CreateUpdate: React.FC<{
     const onFileChange = async (ev: any) => {
         const file = ev.target.files[0];
         const base64 = await convertBase64(file);
-        props.setProductValues({
-            ...props.productValues,
+        props.setBurgerValues({
+            ...props.burgerValues,
             ["img_blob"]: base64 as string
         });
     };
@@ -153,84 +90,77 @@ const CreateUpdate: React.FC<{
         } else {
             sendValue = value;
         }
-        props.setProductValues((previousValues: any) => ({
+        props.setBurgerValues((previousValues: any) => ({
             ...previousValues,
             [name]: sendValue
         }));
     };
 
     return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>{title}</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                {errorAdd ? <pre>{errorAdd.message}</pre> : ""}
-                {errorEdit ? <pre>{errorEdit.message}</pre> : ""}
-                {loadingAdd || loadingEdit ? (
-                    <p>{status}</p>
-                ) : (
-                    <form>
-                        <IonList>
-                            <IonItem>
-                                <IonInput
-                                    value={props.productValues.title}
-                                    onIonInput={handleInputChange}
-                                    name="title"
-                                    label="Title:"
-                                ></IonInput>
-                            </IonItem>
+        <BasePage title={title} footer="">
+            {errorAdd ? <pre>{errorAdd.message}</pre> : ""}
+            {errorEdit ? <pre>{errorEdit.message}</pre> : ""}
+            {loadingAdd || loadingEdit ? (
+                <p>{status}</p>
+            ) : (
+                <form>
+                    <IonList>
+                        <IonItem>
+                            <IonInput
+                                value={props.burgerValues.title}
+                                onIonInput={handleInputChange}
+                                name="title"
+                                label="Title:"
+                            ></IonInput>
+                        </IonItem>
 
-                            <IonItem>
-                                <IonInput
-                                    value={props.productValues.description}
-                                    onIonInput={handleInputChange}
-                                    name="description"
-                                    label="Description:"
-                                ></IonInput>
-                            </IonItem>
-                            <IonItem>
-                                <IonInput
-                                    value={props.productValues.price}
-                                    onIonInput={handleInputChange}
-                                    name="price"
-                                    label="Price:"
-                                    type="number"
-                                ></IonInput>
-                            </IonItem>
-                            <IonItem>
-                                <IonCheckbox
-                                    onIonChange={handleInputChange}
-                                    name="featured"
-                                    checked={props.productValues.featured}
-                                >
-                                    Featured?
-                                </IonCheckbox>
-                            </IonItem>
+                        <IonItem>
+                            <IonInput
+                                value={props.burgerValues.description}
+                                onIonInput={handleInputChange}
+                                name="description"
+                                label="Description:"
+                            ></IonInput>
+                        </IonItem>
+                        <IonItem>
+                            <IonInput
+                                value={props.burgerValues.price}
+                                onIonInput={handleInputChange}
+                                name="price"
+                                label="Price:"
+                                type="number"
+                            ></IonInput>
+                        </IonItem>
+                        <IonItem>
+                            <IonCheckbox
+                                onIonChange={handleInputChange}
+                                name="featured"
+                                checked={props.burgerValues.featured}
+                            >
+                                Featured?
+                            </IonCheckbox>
+                        </IonItem>
 
-                            <IonItem>
-                                <input
-                                    name="image"
-                                    type="file"
-                                    onChange={(ev) => onFileChange(ev)}
-                                ></input>
-                            </IonItem>
-                        </IonList>
+                        <IonItem>
+                            <input
+                                name="image"
+                                type="file"
+                                onChange={(ev) => onFileChange(ev)}
+                            ></input>
+                        </IonItem>
+                    </IonList>
 
-                        <IonButton
-                            type="button"
-                            color="primary"
-                            expand="full"
-                            onClick={(ev) => createUpdateBurger(ev)}
-                        >
-                            {labelAction}
-                        </IonButton>
-                    </form>
-                )}
-            </IonContent>
-        </IonPage>
+                    <IonButton
+                        type="button"
+                        color="primary"
+                        expand="full"
+                        onClick={(ev) => createUpdateBurger(ev)}
+                    >
+                        {labelAction}
+                    </IonButton>
+                </form>
+            )}
+        </BasePage>
     );
 };
 

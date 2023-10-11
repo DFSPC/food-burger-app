@@ -1,22 +1,14 @@
-import {
-    IonButton,
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonItem,
-    IonInput,
-    IonList
-} from "@ionic/react";
+import { IonButton, IonItem, IonInput, IonList } from "@ionic/react";
 
-import { useMutation, gql } from "@apollo/client";
+import BasePage from "./../BasePage";
+
+import { useMutation } from "@apollo/client";
+import { CREATE_USER_QUERY } from "./../GraphQL";
 import { useHistory } from "react-router-dom";
 
 const Register: React.FC<{
     userValues: any;
     setUserValues: Function;
-    getBurgers: Function;
 }> = (props) => {
     const history = useHistory();
 
@@ -38,105 +30,73 @@ const Register: React.FC<{
         }));
     };
 
-    const CREATE_USER_QUERY = gql`
-        mutation CreateUser(
-            $fullname: String!
-            $password: String!
-            $cellphone: Float!
-            $email: String!
-        ) {
-            createUser(
-                fullname: $fullname
-                password: $password
-                cellphone: $cellphone
-                email: $email
-            ) {
-                _id
-                fullname
-                password
-                cellphone
-                email
-                rol
-                token
-            }
-        }
-    `;
-
     const [addUser, { data, loading, error }] = useMutation(CREATE_USER_QUERY);
 
     const registerUser = async (ev: any) => {
         const data = await addUser({ variables: props.userValues });
         props.setUserValues(data?.data?.createUser);
-        props.getBurgers();
         history.push("/home");
     };
 
     return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Register</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                {error ? <pre>{error.message}</pre> : ""}
-                {loading ? (
-                    <p>Register...</p>
-                ) : (
-                    <form>
-                        <IonList>
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.fullname}
-                                    onIonInput={handleInputChange}
-                                    name="fullname"
-                                    label="Full Name:"
-                                ></IonInput>
-                            </IonItem>
+        <BasePage title="Register" footer="">
+            {error ? <pre>{error.message}</pre> : ""}
+            {loading ? (
+                <p>Register...</p>
+            ) : (
+                <form>
+                    <IonList>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.fullname}
+                                onIonInput={handleInputChange}
+                                name="fullname"
+                                label="Full Name:"
+                            ></IonInput>
+                        </IonItem>
 
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.email}
-                                    onIonInput={handleInputChange}
-                                    name="email"
-                                    label="Email:"
-                                    type="email"
-                                ></IonInput>
-                            </IonItem>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.email}
+                                onIonInput={handleInputChange}
+                                name="email"
+                                label="Email:"
+                                type="email"
+                            ></IonInput>
+                        </IonItem>
 
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.password}
-                                    onIonInput={handleInputChange}
-                                    name="password"
-                                    label="Password:"
-                                    type="password"
-                                ></IonInput>
-                            </IonItem>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.password}
+                                onIonInput={handleInputChange}
+                                name="password"
+                                label="Password:"
+                                type="password"
+                            ></IonInput>
+                        </IonItem>
 
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.cellphone}
-                                    onIonInput={handleInputChange}
-                                    name="cellphone"
-                                    label="Cellphone:"
-                                    type="number"
-                                ></IonInput>
-                            </IonItem>
-                        </IonList>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.cellphone}
+                                onIonInput={handleInputChange}
+                                name="cellphone"
+                                label="Cellphone:"
+                                type="number"
+                            ></IonInput>
+                        </IonItem>
+                    </IonList>
 
-                        <IonButton
-                            type="button"
-                            color="primary"
-                            expand="full"
-                            onClick={(ev) => registerUser(ev)}
-                        >
-                            Register
-                        </IonButton>
-                    </form>
-                )}
-            </IonContent>
-        </IonPage>
+                    <IonButton
+                        type="button"
+                        color="primary"
+                        expand="full"
+                        onClick={(ev) => registerUser(ev)}
+                    >
+                        Register
+                    </IonButton>
+                </form>
+            )}
+        </BasePage>
     );
 };
 

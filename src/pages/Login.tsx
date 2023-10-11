@@ -1,22 +1,14 @@
-import {
-    IonButton,
-    IonContent,
-    IonHeader,
-    IonPage,
-    IonTitle,
-    IonToolbar,
-    IonList,
-    IonItem,
-    IonInput
-} from "@ionic/react";
+import { IonButton, IonList, IonItem, IonInput } from "@ionic/react";
 
-import { useLazyQuery, gql } from "@apollo/client";
+import BasePage from "./../BasePage";
+
+import { useLazyQuery } from "@apollo/client";
+import { LOGIN_USER_QUERY } from "./../GraphQL";
 import { useHistory } from "react-router-dom";
 
 const Login: React.FC<{
     userValues: any;
     setUserValues: Function;
-    getBurgers: Function;
 }> = (props) => {
     const history = useHistory();
 
@@ -38,19 +30,6 @@ const Login: React.FC<{
         }));
     };
 
-    const LOGIN_USER_QUERY = gql`
-        query GetUserByEmailPassword($email: String!, $password: String!) {
-            getUserByEmailPassword(email: $email, password: $password) {
-                _id
-                fullname
-                password
-                cellphone
-                email
-                rol
-                token
-            }
-        }
-    `;
     const [getUserLogin, { loading, error, data }] = useLazyQuery(
         LOGIN_USER_QUERY,
         {
@@ -60,58 +39,52 @@ const Login: React.FC<{
 
     const loginUser = async (ev: any) => {
         const dataUser = await getUserLogin({ variables: props.userValues });
-        props.setUserValues(dataUser?.data?.getUserByEmailPassword);
-        props.getBurgers();
-        history.push("/home");
+        if (dataUser?.data?.getUserByEmailPassword) {
+            props.setUserValues(dataUser?.data?.getUserByEmailPassword);
+            history.push("/home");
+        }
     };
 
     return (
-        <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonTitle>Login</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-                {error ? <pre>{error.message}</pre> : ""}
-                {loading ? (
-                    <p>Login...</p>
-                ) : (
-                    <form>
-                        <IonList>
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.email}
-                                    onIonInput={handleInputChange}
-                                    name="email"
-                                    label="Email:"
-                                    type="email"
-                                ></IonInput>
-                            </IonItem>
+        <BasePage title="Login" footer="">
+            {error ? <pre>{error.message}</pre> : ""}
+            {loading ? (
+                <p>Login...</p>
+            ) : (
+                <form>
+                    <IonList>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.email}
+                                onIonInput={handleInputChange}
+                                name="email"
+                                label="Email:"
+                                type="email"
+                            ></IonInput>
+                        </IonItem>
 
-                            <IonItem>
-                                <IonInput
-                                    value={props.userValues.password}
-                                    onIonInput={handleInputChange}
-                                    name="password"
-                                    label="Password:"
-                                    type="password"
-                                ></IonInput>
-                            </IonItem>
-                        </IonList>
+                        <IonItem>
+                            <IonInput
+                                value={props.userValues.password}
+                                onIonInput={handleInputChange}
+                                name="password"
+                                label="Password:"
+                                type="password"
+                            ></IonInput>
+                        </IonItem>
+                    </IonList>
 
-                        <IonButton
-                            type="button"
-                            color="primary"
-                            expand="full"
-                            onClick={(ev) => loginUser(ev)}
-                        >
-                            Login
-                        </IonButton>
-                    </form>
-                )}
-            </IonContent>
-        </IonPage>
+                    <IonButton
+                        type="button"
+                        color="primary"
+                        expand="full"
+                        onClick={(ev) => loginUser(ev)}
+                    >
+                        Login
+                    </IonButton>
+                </form>
+            )}
+        </BasePage>
     );
 };
 

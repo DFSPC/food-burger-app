@@ -41,28 +41,8 @@ import { useLazyQuery, gql } from "@apollo/client";
 
 setupIonicReact();
 
-const GET_BURGERS_QUERY = gql`
-    query Products {
-        products {
-            _id
-            title
-            description
-            img_url
-            price
-            featured
-        }
-    }
-`;
-
 const App: React.FC = () => {
-    const [getBurgers, { loading, error, data: dataBurgers }] = useLazyQuery(
-        GET_BURGERS_QUERY,
-        {
-            fetchPolicy: "network-only"
-        }
-    );
-
-    const emptyProduct = {
+    const emptyBurger = {
         _id: "",
         title: "",
         description: "",
@@ -82,7 +62,7 @@ const App: React.FC = () => {
         token: ""
     };
 
-    const [productValues, setProductValues] = useState(emptyProduct);
+    const [burgerValues, setBurgerValues] = useState(emptyBurger);
     const [userValues, setUserValues] = useState(emptyUser);
 
     return (
@@ -95,11 +75,8 @@ const App: React.FC = () => {
                             path="/home"
                             render={() => (
                                 <Home
-                                    getBurgers={getBurgers}
-                                    dataBurgers={dataBurgers}
-                                    loadingBurgers={loading}
-                                    setProductValues={setProductValues}
                                     userValues={userValues}
+                                    setBurgerValues={setBurgerValues}
                                     setUserValues={setUserValues}
                                 />
                             )}
@@ -110,9 +87,8 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"create"}
-                                    getBurgers={getBurgers}
-                                    productValues={productValues}
-                                    setProductValues={setProductValues}
+                                    burgerValues={burgerValues}
+                                    setBurgerValues={setBurgerValues}
                                 />
                             )}
                             exact={true}
@@ -122,9 +98,8 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"update"}
-                                    getBurgers={getBurgers}
-                                    productValues={productValues}
-                                    setProductValues={setProductValues}
+                                    burgerValues={burgerValues}
+                                    setBurgerValues={setBurgerValues}
                                 />
                             )}
                             exact={true}
@@ -134,7 +109,6 @@ const App: React.FC = () => {
                             render={() => (
                                 <Login
                                     userValues={userValues}
-                                    getBurgers={getBurgers}
                                     setUserValues={setUserValues}
                                 />
                             )}
@@ -145,7 +119,6 @@ const App: React.FC = () => {
                             render={() => (
                                 <Register
                                     userValues={userValues}
-                                    getBurgers={getBurgers}
                                     setUserValues={setUserValues}
                                 />
                             )}
@@ -164,7 +137,7 @@ const App: React.FC = () => {
                                     tab="create"
                                     href="/create"
                                     onClick={(ev) =>
-                                        setProductValues(emptyProduct)
+                                        setBurgerValues(emptyBurger)
                                     }
                                 >
                                     <IonIcon icon={add} />
