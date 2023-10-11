@@ -5,14 +5,14 @@ import {
     IonInput,
     IonList
 } from "@ionic/react";
-import React from "react";
+import React, { useState } from "react";
 import BasePage from "./../BasePage";
 import { useMutation } from "@apollo/client";
 import {
     CREATE_BURGERS_QUERY,
     UPDATE_BURGER_QUERY
 } from "../common/graphql.querys";
-
+import { validateText, validateNumber } from "./../common/validate";
 import { useHistory } from "react-router-dom";
 
 const CreateUpdate: React.FC<{
@@ -43,6 +43,22 @@ const CreateUpdate: React.FC<{
         editBurger,
         { data: dataEdit, loading: loadingEdit, error: errorEdit }
     ] = useMutation(UPDATE_BURGER_QUERY);
+
+    const emptyForm =
+        props.action == "create"
+            ? {
+                  title: false,
+                  description: false,
+                  price: false
+              }
+            : {
+                  title: true,
+                  description: true,
+                  price: true
+              };
+
+    const [isTouched, setIsTouched] = useState(emptyForm);
+    const [isValid, setIsValid] = useState(emptyForm);
 
     const convertBase64 = async (file: any) => {
         return new Promise((resolve, reject) => {
@@ -79,6 +95,20 @@ const CreateUpdate: React.FC<{
         });
     };
 
+    const validateInput = (ev: any) => {
+        const { name, value, checked, type } = ev.target;
+        let validInput: any;
+        if (type == "text") {
+            validInput = validateText(value);
+        } else if (type == "number") {
+            validInput = validateNumber(value);
+        }
+        setIsValid((previousValues: any) => ({
+            ...previousValues,
+            [name]: validInput
+        }));
+    };
+
     const handleInputChange = (ev: any) => {
         const { name, value, checked, type } = ev.target;
         let sendValue: any;
@@ -109,27 +139,69 @@ const CreateUpdate: React.FC<{
                         <IonItem>
                             <IonInput
                                 value={props.burgerValues.title}
-                                onIonInput={handleInputChange}
+                                onIonInput={(ev) => {
+                                    handleInputChange(ev);
+                                    validateInput(ev);
+                                }}
                                 name="title"
                                 label="Title:"
+                                className={`${isValid.title && "ion-valid"} ${
+                                    isValid.title === false && "ion-invalid"
+                                } ${isTouched.title && "ion-touched"}`}
+                                errorText="Invalid Title"
+                                onIonBlur={() =>
+                                    setIsTouched((previousValues: any) => ({
+                                        ...previousValues,
+                                        ["title"]: true
+                                    }))
+                                }
                             ></IonInput>
                         </IonItem>
 
                         <IonItem>
                             <IonInput
                                 value={props.burgerValues.description}
-                                onIonInput={handleInputChange}
+                                onIonInput={(ev) => {
+                                    handleInputChange(ev);
+                                    validateInput(ev);
+                                }}
                                 name="description"
                                 label="Description:"
+                                className={`${
+                                    isValid.description && "ion-valid"
+                                } ${
+                                    isValid.description === false &&
+                                    "ion-invalid"
+                                } ${isTouched.title && "ion-touched"}`}
+                                errorText="Invalid Description"
+                                onIonBlur={() =>
+                                    setIsTouched((previousValues: any) => ({
+                                        ...previousValues,
+                                        ["description"]: true
+                                    }))
+                                }
                             ></IonInput>
                         </IonItem>
                         <IonItem>
                             <IonInput
                                 value={props.burgerValues.price}
-                                onIonInput={handleInputChange}
+                                onIonInput={(ev) => {
+                                    handleInputChange(ev);
+                                    validateInput(ev);
+                                }}
                                 name="price"
                                 label="Price:"
                                 type="number"
+                                className={`${isValid.price && "ion-valid"} ${
+                                    isValid.price === false && "ion-invalid"
+                                } ${isTouched.title && "ion-touched"}`}
+                                errorText="Invalid Price"
+                                onIonBlur={() =>
+                                    setIsTouched((previousValues: any) => ({
+                                        ...previousValues,
+                                        ["pricce"]: true
+                                    }))
+                                }
                             ></IonInput>
                         </IonItem>
                         <IonItem>
@@ -152,6 +224,11 @@ const CreateUpdate: React.FC<{
                     </IonList>
 
                     <IonButton
+                        disabled={
+                            !isValid.title ||
+                            !isValid.description ||
+                            !isValid.price
+                        }
                         type="button"
                         color="primary"
                         expand="full"
