@@ -1,12 +1,10 @@
 import { IonButton, IonList, IonItem, IonInput } from "@ionic/react";
-
 import BasePage from "./../BasePage";
-
 import { useLazyQuery } from "@apollo/client";
-import { LOGIN_USER_QUERY } from "./../GraphQL";
+import { LOGIN_USER_QUERY } from "../common/graphql.querys";
 import { useHistory } from "react-router-dom";
-
 import React, { useState } from "react";
+import { validateEmail, validatePassword } from "./../common/validate";
 
 const Login: React.FC<{
     userValues: any;
@@ -16,7 +14,7 @@ const Login: React.FC<{
 
     const emptyForm = {
         email: false,
-        password: false,
+        password: false
     };
 
     const [isTouched, setIsTouched] = useState(emptyForm);
@@ -40,16 +38,6 @@ const Login: React.FC<{
         }));
     };
 
-    const validateEmail = (email: string) => {
-        return email.match(
-          /^(?=.{1,254}$)(?=.{1,64}@)[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-        ) != null;
-    };
-
-    const validatePassword = (password: string) => {
-        return password.length > 0;
-    };
-
     const validateInput = (ev: any) => {
         const { name, value, checked, type } = ev.target;
         let validInput: any;
@@ -62,8 +50,7 @@ const Login: React.FC<{
             ...previousValues,
             [name]: validInput
         }));
-    }
-
+    };
 
     const [getUserLogin, { loading, error, data }] = useLazyQuery(
         LOGIN_USER_QUERY,
@@ -90,7 +77,9 @@ const Login: React.FC<{
                     <IonList>
                         <IonItem>
                             <IonInput
-                                className={`${isValid.email && 'ion-valid'} ${isValid.email === false && 'ion-invalid'} ${isTouched.email && 'ion-touched'}`}
+                                className={`${isValid.email && "ion-valid"} ${
+                                    isValid.email === false && "ion-invalid"
+                                } ${isTouched.email && "ion-touched"}`}
                                 value={props.userValues.email}
                                 onIonInput={(ev) => {
                                     handleInputChange(ev);
@@ -101,17 +90,23 @@ const Login: React.FC<{
                                 name="email"
                                 label="Email:"
                                 type="email"
-                                onIonBlur={() => setIsTouched((previousValues: any) => ({
-                                    ...previousValues,
-                                    ['email']: true
-                                }))}
+                                onIonBlur={() =>
+                                    setIsTouched((previousValues: any) => ({
+                                        ...previousValues,
+                                        ["email"]: true
+                                    }))
+                                }
                             ></IonInput>
                         </IonItem>
 
                         <IonItem>
                             <IonInput
                                 value={props.userValues.password}
-                                className={`${isValid.password && 'ion-valid'} ${isValid.password === false && 'ion-invalid'} ${isTouched.password && 'ion-touched'}`}
+                                className={`${
+                                    isValid.password && "ion-valid"
+                                } ${
+                                    isValid.password === false && "ion-invalid"
+                                } ${isTouched.password && "ion-touched"}`}
                                 onIonInput={(ev) => {
                                     handleInputChange(ev);
                                     validateInput(ev);
@@ -120,10 +115,12 @@ const Login: React.FC<{
                                 name="password"
                                 label="Password:"
                                 type="password"
-                                onIonBlur={() => setIsTouched((previousValues: any) => ({
-                                    ...previousValues,
-                                    ['password']: true
-                                }))}
+                                onIonBlur={() =>
+                                    setIsTouched((previousValues: any) => ({
+                                        ...previousValues,
+                                        ["password"]: true
+                                    }))
+                                }
                             ></IonInput>
                         </IonItem>
                     </IonList>

@@ -5,12 +5,13 @@ import {
     IonInput,
     IonList
 } from "@ionic/react";
-
 import React from "react";
 import BasePage from "./../BasePage";
-
 import { useMutation } from "@apollo/client";
-import { CREATE_BURGERS_QUERY, UPDATE_BURGER_QUERY } from "./../GraphQL";
+import {
+    CREATE_BURGERS_QUERY,
+    UPDATE_BURGER_QUERY
+} from "../common/graphql.querys";
 
 import { useHistory } from "react-router-dom";
 

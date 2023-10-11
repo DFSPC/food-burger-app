@@ -12,11 +12,12 @@ import {
     IonCol,
     IonGrid
 } from "@ionic/react";
-
 import { useLazyQuery, useMutation } from "@apollo/client";
-import { GET_BURGERS_QUERY, DELETE_BURGER_QUERY } from "./../GraphQL";
+import {
+    GET_BURGERS_QUERY,
+    DELETE_BURGER_QUERY
+} from "../common/graphql.querys";
 import { useHistory, useLocation } from "react-router-dom";
-
 import BasePage from "./../BasePage";
 import { useEffect } from "react";
 
