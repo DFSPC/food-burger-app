@@ -1,6 +1,7 @@
 import { Redirect, Route } from "react-router-dom";
 import {
     IonApp,
+    IonAlert,
     IonIcon,
     IonTabs,
     IonTabBar,
@@ -36,6 +37,7 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 setupIonicReact();
 
@@ -62,6 +64,12 @@ const App: React.FC = () => {
 
     const [burgerValues, setBurgerValues] = useState(emptyBurger);
     const [userValues, setUserValues] = useState(emptyUser);
+    const [alertLogoutOpen, setAlertLogoutOpen] = useState(false);
+
+    const logoutUser = () => {
+        setUserValues(emptyUser);
+        window.location.href = "/login";
+    };
 
     return (
         <IonApp>
@@ -145,9 +153,11 @@ const App: React.FC = () => {
                                 <></>
                             )}
                             <IonTabButton
-                                tab="login"
-                                href="/login"
-                                onClick={(ev) => setUserValues(emptyUser)}
+                                tab="logout"
+                                onClick={(ev) => {
+                                    ev.preventDefault();
+                                    setAlertLogoutOpen(true);
+                                }}
                             >
                                 <IonIcon icon={logOut} />
                                 <IonLabel>Log Out</IonLabel>
@@ -167,6 +177,27 @@ const App: React.FC = () => {
                         </IonTabBar>
                     )}
                 </IonTabs>
+                <IonAlert
+                    isOpen={alertLogoutOpen}
+                    header="Logout of app?"
+                    buttons={[
+                        {
+                            text: "Cancel",
+                            role: "cancel",
+                            handler: () => {
+                                return false;
+                            }
+                        },
+                        {
+                            text: "OK",
+                            role: "confirm",
+                            handler: () => {
+                                logoutUser();
+                            }
+                        }
+                    ]}
+                    onDidDismiss={() => setAlertLogoutOpen(false)}
+                ></IonAlert>
             </IonReactRouter>
         </IonApp>
     );
