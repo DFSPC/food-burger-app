@@ -10,12 +10,13 @@ import {
     IonInput
 } from "@ionic/react";
 
-import { useMutation, gql } from "@apollo/client";
+import { useLazyQuery, gql } from "@apollo/client";
 import { useHistory } from "react-router-dom";
 
 const Login: React.FC<{
     userValues: any;
     setUserValues: Function;
+    getBurgers: Function;
 }> = (props) => {
     const history = useHistory();
 
@@ -38,7 +39,7 @@ const Login: React.FC<{
     };
 
     const LOGIN_USER_QUERY = gql`
-        mutation GetUserByEmailPassword($email: String!, $password: String!) {
+        query GetUserByEmailPassword($email: String!, $password: String!) {
             getUserByEmailPassword(email: $email, password: $password) {
                 _id
                 fullname
@@ -50,11 +51,17 @@ const Login: React.FC<{
             }
         }
     `;
-    const [getUser, { data, loading, error }] = useMutation(LOGIN_USER_QUERY);
+    const [getUserLogin, { loading, error, data }] = useLazyQuery(
+        LOGIN_USER_QUERY,
+        {
+            fetchPolicy: "network-only"
+        }
+    );
 
     const loginUser = async (ev: any) => {
-        const data = await getUser({ variables: props.userValues });
-        props.setUserValues(data?.data?.getUserByEmailPassword);
+        const dataUser = await getUserLogin({ variables: props.userValues });
+        props.setUserValues(dataUser?.data?.getUserByEmailPassword);
+        props.getBurgers();
         history.push("/home");
     };
 

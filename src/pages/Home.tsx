@@ -15,7 +15,8 @@ import {
     RefresherEventDetail,
     IonRow,
     IonCol,
-    IonGrid
+    IonGrid,
+    IonFooter
 } from "@ionic/react";
 
 import { useMutation, gql } from "@apollo/client";
@@ -31,7 +32,7 @@ interface product {
 }
 
 const Home: React.FC<{
-    reloadData: Function;
+    getBurgers: Function;
     dataBurgers: any;
     loadingBurgers: boolean;
     setProductValues: Function;
@@ -41,7 +42,7 @@ const Home: React.FC<{
     const history = useHistory();
 
     const reload = (event: CustomEvent<RefresherEventDetail>) => {
-        props.reloadData();
+        props.getBurgers();
         event.detail.complete();
     };
 
@@ -62,14 +63,14 @@ const Home: React.FC<{
     const removeBurger = async (id: string) => {
         const data = await deleteBurger({ variables: { id: id } });
         if (data.data?.deleteProduct) {
-            props.reloadData();
+            props.getBurgers();
         }
     };
 
     return (
         <IonPage>
             <IonHeader>
-                <IonToolbar>
+                <IonToolbar className="ion-text-center">
                     <IonTitle>List of Burgers</IonTitle>
                 </IonToolbar>
             </IonHeader>
@@ -177,6 +178,11 @@ const Home: React.FC<{
                     </IonAccordionGroup>
                 )}
             </IonContent>
+            <IonFooter>
+                <IonToolbar className="ion-text-center">
+                    <IonLabel>Logged as {props.userValues.fullname}</IonLabel>
+                </IonToolbar>
+            </IonFooter>
         </IonPage>
     );
 };

@@ -37,9 +37,7 @@ import "./theme/variables.css";
 
 import React, { useState } from "react";
 
-import { useQuery, gql } from "@apollo/client";
-
-import { useHistory } from "react-router-dom";
+import { useLazyQuery, gql } from "@apollo/client";
 
 setupIonicReact();
 
@@ -57,7 +55,12 @@ const GET_BURGERS_QUERY = gql`
 `;
 
 const App: React.FC = () => {
-    let { data, loading, refetch } = useQuery(GET_BURGERS_QUERY);
+    const [getBurgers, { loading, error, data: dataBurgers }] = useLazyQuery(
+        GET_BURGERS_QUERY,
+        {
+            fetchPolicy: "network-only"
+        }
+    );
 
     const emptyProduct = {
         _id: "",
@@ -82,10 +85,6 @@ const App: React.FC = () => {
     const [productValues, setProductValues] = useState(emptyProduct);
     const [userValues, setUserValues] = useState(emptyUser);
 
-    async function reloadData() {
-        await refetch();
-    }
-    console.log("userValues", userValues);
     return (
         <IonApp>
             <IonReactRouter>
@@ -96,8 +95,8 @@ const App: React.FC = () => {
                             path="/home"
                             render={() => (
                                 <Home
-                                    reloadData={reloadData}
-                                    dataBurgers={data}
+                                    getBurgers={getBurgers}
+                                    dataBurgers={dataBurgers}
                                     loadingBurgers={loading}
                                     setProductValues={setProductValues}
                                     userValues={userValues}
@@ -111,7 +110,7 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"create"}
-                                    reloadData={reloadData}
+                                    getBurgers={getBurgers}
                                     productValues={productValues}
                                     setProductValues={setProductValues}
                                 />
@@ -123,7 +122,7 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"update"}
-                                    reloadData={reloadData}
+                                    getBurgers={getBurgers}
                                     productValues={productValues}
                                     setProductValues={setProductValues}
                                 />
@@ -135,6 +134,7 @@ const App: React.FC = () => {
                             render={() => (
                                 <Login
                                     userValues={userValues}
+                                    getBurgers={getBurgers}
                                     setUserValues={setUserValues}
                                 />
                             )}
@@ -145,6 +145,7 @@ const App: React.FC = () => {
                             render={() => (
                                 <Register
                                     userValues={userValues}
+                                    getBurgers={getBurgers}
                                     setUserValues={setUserValues}
                                 />
                             )}

@@ -16,6 +16,7 @@ import { useHistory } from "react-router-dom";
 const Register: React.FC<{
     userValues: any;
     setUserValues: Function;
+    getBurgers: Function;
 }> = (props) => {
     const history = useHistory();
 
@@ -66,6 +67,7 @@ const Register: React.FC<{
     const registerUser = async (ev: any) => {
         const data = await addUser({ variables: props.userValues });
         props.setUserValues(data?.data?.createUser);
+        props.getBurgers();
         history.push("/home");
     };
 

@@ -19,7 +19,7 @@ import { useHistory } from "react-router-dom";
 
 const CreateUpdate: React.FC<{
     action: string;
-    reloadData: any;
+    getBurgers: Function;
     productValues: any;
     setProductValues: Function;
 }> = (props) => {
@@ -127,7 +127,7 @@ const CreateUpdate: React.FC<{
         }
         if (data.data?.createProduct?._id || data.data?.updateProduct?._id) {
             props.setProductValues(emptyProduct);
-            props.reloadData();
+            props.getBurgers();
             history.push("/home");
         }
     };
