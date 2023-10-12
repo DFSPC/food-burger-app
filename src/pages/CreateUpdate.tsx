@@ -129,7 +129,7 @@ const CreateUpdate: React.FC<{
                                 name="title"
                                 label="Title:"
                                 className={`${
-                                    props.isBurgerTouched.title && "ion-valid"
+                                    props.isBurgerValid.title && "ion-valid"
                                 } ${
                                     props.isBurgerValid.title === false &&
                                     "ion-invalid"
