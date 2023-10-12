@@ -179,7 +179,7 @@ const App: React.FC = () => {
                             path="/update"
                             render={() => (
                                 <CreateUpdate
-                                    action={"edit"}
+                                    action={"update"}
                                     burgerValues={burgerValues}
                                     setBurgerValues={setBurgerValues}
                                     isBurgerValid={isBurgerValid}
