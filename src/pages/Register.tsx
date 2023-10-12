@@ -1,9 +1,6 @@
 import { IonButton, IonItem, IonInput, IonList } from "@ionic/react";
 import BasePage from "./../BasePage";
-import { useMutation } from "@apollo/client";
-import { CREATE_USER_QUERY } from "../common/graphql.querys";
 import { useHistory } from "react-router-dom";
-import React, { useState } from "react";
 import {
     validateEmail,
     validatePassword,
@@ -14,18 +11,16 @@ import {
 const Register: React.FC<{
     userValues: any;
     setUserValues: Function;
+    addUser: Function;
+    loadingAddUser: boolean;
+    errorAddUser: any;
+    isUserValid: any;
+    setIsUserValid: Function;
+    isUserTouched: any;
+    setIsUserTouched: Function;
+    getBurgers: Function;
 }> = (props) => {
     const history = useHistory();
-
-    const emptyForm = {
-        fullname: false,
-        email: false,
-        password: false,
-        cellphone: false
-    };
-
-    const [isTouched, setIsTouched] = useState(emptyForm);
-    const [isValid, setIsValid] = useState(emptyForm);
 
     const handleInputChange = (ev: any) => {
         const { name, value, checked, type } = ev.target;
@@ -57,24 +52,23 @@ const Register: React.FC<{
         } else if (type == "number") {
             validInput = validateNumber(value);
         }
-        setIsValid((previousValues: any) => ({
+        props.setIsUserValid((previousValues: any) => ({
             ...previousValues,
             [name]: validInput
         }));
     };
 
-    const [addUser, { data, loading, error }] = useMutation(CREATE_USER_QUERY);
-
     const registerUser = async (ev: any) => {
-        const data = await addUser({ variables: props.userValues });
+        const data = await props.addUser({ variables: props.userValues });
         props.setUserValues(data?.data?.createUser);
+        props.getBurgers();
         history.push("/home");
     };
 
     return (
         <BasePage title="Register" footer="">
-            {error ? <pre>{error.message}</pre> : ""}
-            {loading ? (
+            {props.errorAddUser ? <pre>{props.errorAddUser.message}</pre> : ""}
+            {props.loadingAddUser ? (
                 <p>Register...</p>
             ) : (
                 <form>
@@ -89,16 +83,22 @@ const Register: React.FC<{
                                 name="fullname"
                                 label="Full Name:"
                                 className={`${
-                                    isValid.fullname && "ion-valid"
+                                    props.isUserValid.fullname && "ion-valid"
                                 } ${
-                                    isValid.fullname === false && "ion-invalid"
-                                } ${isTouched.fullname && "ion-touched"}`}
+                                    props.isUserValid.fullname === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isUserTouched.fullname &&
+                                    "ion-touched"
+                                }`}
                                 errorText="Invalid Full Name"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["fullname"]: true
-                                    }))
+                                    props.setIsUserTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["fullname"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -113,16 +113,23 @@ const Register: React.FC<{
                                 name="email"
                                 label="Email:"
                                 type="email"
-                                className={`${isValid.email && "ion-valid"} ${
-                                    isValid.email === false && "ion-invalid"
-                                } ${isTouched.email && "ion-touched"}`}
+                                className={`${
+                                    props.isUserValid.email && "ion-valid"
+                                } ${
+                                    props.isUserValid.email === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isUserTouched.email && "ion-touched"
+                                }`}
                                 placeholder="email@domain.com"
                                 errorText="Invalid Full Name"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["email"]: true
-                                    }))
+                                    props.setIsUserTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["email"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -138,16 +145,22 @@ const Register: React.FC<{
                                 label="Password:"
                                 type="password"
                                 className={`${
-                                    isValid.password && "ion-valid"
+                                    props.isUserValid.password && "ion-valid"
                                 } ${
-                                    isValid.password === false && "ion-invalid"
-                                } ${isTouched.password && "ion-touched"}`}
+                                    props.isUserValid.password === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isUserTouched.password &&
+                                    "ion-touched"
+                                }`}
                                 errorText="Invalid Password"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["password"]: true
-                                    }))
+                                    props.setIsUserTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["password"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -163,17 +176,23 @@ const Register: React.FC<{
                                 label="Cellphone:"
                                 type="number"
                                 className={`${
-                                    isValid.cellphone && "ion-valid"
+                                    props.isUserValid.cellphone && "ion-valid"
                                 } ${
-                                    isValid.cellphone === false && "ion-invalid"
-                                } ${isTouched.cellphone && "ion-touched"}`}
+                                    props.isUserValid.cellphone === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isUserTouched.cellphone &&
+                                    "ion-touched"
+                                }`}
                                 errorText="Invalid Cellphone"
-                                placeholder="3217654321"
+                                placeholder="3XXXXXXXXX"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["cellphone"]: true
-                                    }))
+                                    props.setIsUserTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["cellphone"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -181,10 +200,10 @@ const Register: React.FC<{
 
                     <IonButton
                         disabled={
-                            !isValid.email ||
-                            !isValid.password ||
-                            !isValid.fullname ||
-                            !isValid.cellphone
+                            !props.isUserValid.email ||
+                            !props.isUserValid.password ||
+                            !props.isUserValid.fullname ||
+                            !props.isUserValid.cellphone
                         }
                         type="button"
                         color="primary"

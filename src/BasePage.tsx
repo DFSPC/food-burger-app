@@ -9,7 +9,7 @@ import {
 } from "@ionic/react";
 import { PropsWithChildren, ReactNode } from "react";
 
-type FooProps = {
+type TitleFooterProps = {
     title: string;
     footer: string;
 };
@@ -18,7 +18,7 @@ const BasePage: React.FC<{
     title: string;
     footer: string;
     children?: ReactNode;
-}> = (props: PropsWithChildren<FooProps>) => {
+}> = (props: PropsWithChildren<TitleFooterProps>) => {
     return (
         <IonPage>
             <IonHeader>

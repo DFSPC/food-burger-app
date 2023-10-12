@@ -5,60 +5,34 @@ import {
     IonInput,
     IonList
 } from "@ionic/react";
-import React, { useState } from "react";
 import BasePage from "./../BasePage";
-import { useMutation } from "@apollo/client";
-import {
-    CREATE_BURGERS_QUERY,
-    UPDATE_BURGER_QUERY
-} from "../common/graphql.querys";
+
 import { validateText, validateNumber } from "./../common/validate";
 import { useHistory } from "react-router-dom";
+
+import { EMPTY_BURGER } from "..//common/consts";
 
 const CreateUpdate: React.FC<{
     action: string;
     burgerValues: any;
+    addBurger: Function;
+    loadingAddBurger: boolean;
+    errorAddBurger: any;
+    editBurger: Function;
+    loadingEditBurger: boolean;
+    errorEditBurger: any;
     setBurgerValues: Function;
+    isBurgerValid: any;
+    setIsBurgerValid: Function;
+    isBurgerTouched: any;
+    setIsBurgerTouched: Function;
+    getBurgers: Function;
 }> = (props) => {
     const title = props.action == "create" ? "Create Burger" : "Edit Burger";
     const status = props.action == "create" ? "Creating..." : "Editing...";
     const labelAction = props.action == "create" ? "Create" : "Edit";
 
-    const emptyProduct = {
-        _id: "",
-        title: "",
-        description: "",
-        price: "",
-        featured: false,
-        img_url: "",
-        img_blob: ""
-    };
-
     const history = useHistory();
-
-    const [addBurger, { data: dataAdd, loading: loadingAdd, error: errorAdd }] =
-        useMutation(CREATE_BURGERS_QUERY);
-
-    const [
-        editBurger,
-        { data: dataEdit, loading: loadingEdit, error: errorEdit }
-    ] = useMutation(UPDATE_BURGER_QUERY);
-
-    const emptyForm =
-        props.action == "create"
-            ? {
-                  title: false,
-                  description: false,
-                  price: false
-              }
-            : {
-                  title: true,
-                  description: true,
-                  price: true
-              };
-
-    const [isTouched, setIsTouched] = useState(emptyForm);
-    const [isValid, setIsValid] = useState(emptyForm);
 
     const convertBase64 = async (file: any) => {
         return new Promise((resolve, reject) => {
@@ -76,12 +50,13 @@ const CreateUpdate: React.FC<{
     const createUpdateBurger = async (ev: any) => {
         let data: any;
         if (props.action == "create") {
-            data = await addBurger({ variables: props.burgerValues });
+            data = await props.addBurger({ variables: props.burgerValues });
         } else {
-            data = await editBurger({ variables: props.burgerValues });
+            data = await props.editBurger({ variables: props.burgerValues });
         }
         if (data.data?.createProduct?._id || data.data?.updateProduct?._id) {
-            props.setBurgerValues(emptyProduct);
+            props.setBurgerValues(EMPTY_BURGER);
+            props.getBurgers();
             history.push("/home");
         }
     };
@@ -103,7 +78,7 @@ const CreateUpdate: React.FC<{
         } else if (type == "number") {
             validInput = validateNumber(value);
         }
-        setIsValid((previousValues: any) => ({
+        props.setIsBurgerValid((previousValues: any) => ({
             ...previousValues,
             [name]: validInput
         }));
@@ -129,9 +104,17 @@ const CreateUpdate: React.FC<{
 
     return (
         <BasePage title={title} footer="">
-            {errorAdd ? <pre>{errorAdd.message}</pre> : ""}
-            {errorEdit ? <pre>{errorEdit.message}</pre> : ""}
-            {loadingAdd || loadingEdit ? (
+            {props.errorAddBurger ? (
+                <pre>{props.errorAddBurger.message}</pre>
+            ) : (
+                ""
+            )}
+            {props.errorEditBurger ? (
+                <pre>{props.errorEditBurger.message}</pre>
+            ) : (
+                ""
+            )}
+            {props.loadingAddBurger || props.loadingEditBurger ? (
                 <p>{status}</p>
             ) : (
                 <form>
@@ -145,15 +128,22 @@ const CreateUpdate: React.FC<{
                                 }}
                                 name="title"
                                 label="Title:"
-                                className={`${isValid.title && "ion-valid"} ${
-                                    isValid.title === false && "ion-invalid"
-                                } ${isTouched.title && "ion-touched"}`}
+                                className={`${
+                                    props.isBurgerTouched.title && "ion-valid"
+                                } ${
+                                    props.isBurgerValid.title === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isBurgerTouched.title && "ion-touched"
+                                }`}
                                 errorText="Invalid Title"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["title"]: true
-                                    }))
+                                    props.setIsBurgerTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["title"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -168,17 +158,22 @@ const CreateUpdate: React.FC<{
                                 name="description"
                                 label="Description:"
                                 className={`${
-                                    isValid.description && "ion-valid"
+                                    props.isBurgerValid.description &&
+                                    "ion-valid"
                                 } ${
-                                    isValid.description === false &&
+                                    props.isBurgerValid.description === false &&
                                     "ion-invalid"
-                                } ${isTouched.title && "ion-touched"}`}
+                                } ${
+                                    props.isBurgerTouched.title && "ion-touched"
+                                }`}
                                 errorText="Invalid Description"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["description"]: true
-                                    }))
+                                    props.setIsBurgerTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["description"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -192,15 +187,22 @@ const CreateUpdate: React.FC<{
                                 name="price"
                                 label="Price:"
                                 type="number"
-                                className={`${isValid.price && "ion-valid"} ${
-                                    isValid.price === false && "ion-invalid"
-                                } ${isTouched.title && "ion-touched"}`}
+                                className={`${
+                                    props.isBurgerValid.price && "ion-valid"
+                                } ${
+                                    props.isBurgerValid.price === false &&
+                                    "ion-invalid"
+                                } ${
+                                    props.isBurgerTouched.title && "ion-touched"
+                                }`}
                                 errorText="Invalid Price"
                                 onIonBlur={() =>
-                                    setIsTouched((previousValues: any) => ({
-                                        ...previousValues,
-                                        ["pricce"]: true
-                                    }))
+                                    props.setIsBurgerTouched(
+                                        (previousValues: any) => ({
+                                            ...previousValues,
+                                            ["pricce"]: true
+                                        })
+                                    )
                                 }
                             ></IonInput>
                         </IonItem>
@@ -225,9 +227,9 @@ const CreateUpdate: React.FC<{
 
                     <IonButton
                         disabled={
-                            !isValid.title ||
-                            !isValid.description ||
-                            !isValid.price
+                            !props.isBurgerValid.title ||
+                            !props.isBurgerValid.description ||
+                            !props.isBurgerValid.price
                         }
                         type="button"
                         color="primary"

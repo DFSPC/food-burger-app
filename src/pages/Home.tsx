@@ -12,65 +12,45 @@ import {
     IonCol,
     IonGrid
 } from "@ionic/react";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import {
-    GET_BURGERS_QUERY,
-    DELETE_BURGER_QUERY
-} from "../common/graphql.querys";
-import { useHistory, useLocation } from "react-router-dom";
+
+import { useHistory } from "react-router-dom";
 import BasePage from "./../BasePage";
-import { useEffect } from "react";
+
+import { FULL_VALID_BURGER } from "../common/consts";
 
 const Home: React.FC<{
     setBurgerValues: Function;
     userValues: any;
     setUserValues: Function;
+    getBurgers: Function;
+    dataGetBurgers: any;
+    loadingGetBurgers: boolean;
+    errorGetBurgers: any;
+    deleteBurger: Function;
+    loadingDeleteBurger: boolean;
+    setIsBurgerValid: Function;
+    setIsBurgerTouched: Function;
 }> = (props) => {
     const history = useHistory();
-    let location = useLocation();
 
     const reload = (event: CustomEvent<RefresherEventDetail>) => {
-        getBurgers();
+        props.getBurgers();
         event.detail.complete();
     };
 
-    const [
-        getBurgers,
-        {
-            loading: loadingGetBurgers,
-            error: errorGetBurgers,
-            data: dataGetBurgers
-        }
-    ] = useLazyQuery(GET_BURGERS_QUERY, {
-        fetchPolicy: "network-only"
-    });
-
-    const [
-        deleteBurger,
-        {
-            loading: loadingDeleteBurger,
-            error: errorDeleteBurger,
-            data: dataDeleteBurger
-        }
-    ] = useMutation(DELETE_BURGER_QUERY);
-
     const editBurger = async (burger: any) => {
         props.setBurgerValues(burger);
+        props.setIsBurgerValid(FULL_VALID_BURGER);
+        props.setIsBurgerTouched(FULL_VALID_BURGER);
         history.push("/update");
     };
 
     const removeBurger = async (id: string) => {
-        const data = await deleteBurger({ variables: { id: id } });
+        const data = await props.deleteBurger({ variables: { id: id } });
         if (data.data?.deleteProduct) {
-            getBurgers();
+            props.getBurgers();
         }
     };
-
-    useEffect(() => {
-        if (location.pathname == "/home") {
-            getBurgers();
-        }
-    }, [location.pathname]);
 
     return (
         <BasePage
@@ -80,12 +60,12 @@ const Home: React.FC<{
             <IonRefresher slot="fixed" onIonRefresh={reload}>
                 <IonRefresherContent></IonRefresherContent>
             </IonRefresher>
-            {loadingGetBurgers || loadingDeleteBurger ? (
+            {props.loadingGetBurgers || props.loadingDeleteBurger ? (
                 "Loading..."
             ) : (
                 <IonAccordionGroup>
-                    {dataGetBurgers?.products
-                        ? dataGetBurgers.products.map((product: any) => (
+                    {props.dataGetBurgers?.products
+                        ? props.dataGetBurgers.products.map((product: any) => (
                               <IonAccordion key={product._id}>
                                   <IonItem slot="header">
                                       <IonLabel>{product.title}</IonLabel>
