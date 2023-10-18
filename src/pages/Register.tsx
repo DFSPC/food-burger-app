@@ -122,7 +122,7 @@ const Register: React.FC<{
                                     props.isUserTouched.email && "ion-touched"
                                 }`}
                                 placeholder="email@domain.com"
-                                errorText="Invalid Full Name"
+                                errorText="Invalid Email"
                                 onIonBlur={() =>
                                     props.setIsUserTouched(
                                         (previousValues: any) => ({
