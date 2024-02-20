@@ -55,7 +55,7 @@ const Home: React.FC<{
     return (
         <BasePage
             title="List of Burgers"
-            footer={`Looged as ${props.userValues.fullname}`}
+            footer={`Logged as ${props.userValues.fullname}`}
         >
             <IonRefresher slot="fixed" onIonRefresh={reload}>
                 <IonRefresherContent></IonRefresherContent>
