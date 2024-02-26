@@ -130,7 +130,7 @@ const App: React.FC = () => {
     ] = useMutation(DELETE_BURGER_QUERY);
 
     useEffect(() => {
-        if (userValues.email) {
+        if (userValues.token) {
             localStorage.setItem("userValues", JSON.stringify(userValues));
         }
     }, [userValues]);
@@ -139,7 +139,7 @@ const App: React.FC = () => {
         const userValues = JSON.parse(
             localStorage.getItem("userValues") || "{}"
         );
-        if (userValues.email) {
+        if (userValues.token) {
             setUserValues(userValues);
         }
     }, []);

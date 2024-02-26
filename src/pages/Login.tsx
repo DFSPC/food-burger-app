@@ -3,6 +3,8 @@ import BasePage from "./../BasePage";
 import { useHistory } from "react-router-dom";
 import { validateEmail, validatePassword } from "./../common/validate";
 
+import React, { useEffect } from "react";
+
 const Login: React.FC<{
     userValues: any;
     setUserValues: Function;
@@ -59,6 +61,12 @@ const Login: React.FC<{
             history.push("/home");
         }
     };
+
+    useEffect(() => {
+        if (props.userValues.token) {
+            window.location.href = "/home";
+        }
+    }, [props.userValues]);
 
     return (
         <BasePage title="Login" footer="">
