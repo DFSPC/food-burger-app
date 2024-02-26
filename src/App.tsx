@@ -36,7 +36,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
     GET_BURGERS_QUERY,
@@ -71,6 +71,7 @@ const App: React.FC = () => {
 
     const logoutUser = () => {
         setUserValues(EMPTY_USER);
+        localStorage.setItem("userValues", JSON.stringify(EMPTY_USER));
         window.location.href = "/login";
     };
 
@@ -127,6 +128,21 @@ const App: React.FC = () => {
             data: dataDeleteBurger
         }
     ] = useMutation(DELETE_BURGER_QUERY);
+
+    useEffect(() => {
+        if (userValues.email) {
+            localStorage.setItem("userValues", JSON.stringify(userValues));
+        }
+    }, [userValues]);
+
+    useEffect(() => {
+        const userValues = JSON.parse(
+            localStorage.getItem("userValues") || "{}"
+        );
+        if (userValues.email) {
+            setUserValues(userValues);
+        }
+    }, []);
 
     return (
         <IonApp>

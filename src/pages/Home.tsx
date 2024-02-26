@@ -18,6 +18,8 @@ import BasePage from "./../BasePage";
 
 import { FULL_VALID_BURGER } from "../common/consts";
 
+import React, { useEffect } from "react";
+
 const Home: React.FC<{
     setBurgerValues: Function;
     userValues: any;
@@ -51,6 +53,12 @@ const Home: React.FC<{
             props.getBurgers();
         }
     };
+
+    useEffect(() => {
+        if (props.userValues.email) {
+            props.getBurgers();
+        }
+    }, [props.userValues]);
 
     return (
         <BasePage
