@@ -1,162 +1,161 @@
-import { IonButton, IonList, IonItem, IonInput } from "@ionic/react";
-import BasePage from "./../BasePage";
-import { useHistory } from "react-router-dom";
-import { validateEmail, validatePassword } from "./../common/validate";
-
 import React, { useEffect } from "react";
+import {
+    IonButton,
+    IonList,
+    IonItem,
+    IonInput,
+    IonText,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle
+} from "@ionic/react";
+import { mailOutline, lockClosedOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
+import { useLazyQuery } from "@apollo/client";
+import BasePage from "../BasePage";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { useForm } from "../hooks/useForm";
+import { useValidation } from "../hooks/useValidation";
+import { LOGIN_USER_QUERY } from "../common/graphql.querys";
+import { EMPTY_USER, EMPTY_VALID_USER } from "../common/consts";
+import { User, UserValidation } from "../types";
 
-const Login: React.FC<{
-    userValues: any;
-    setUserValues: Function;
-    getUserLogin: Function;
-    loadingUserLogin: boolean;
-    errorUserLogin: any;
-    isUserValid: any;
-    setIsUserValid: Function;
-    isUserTouched: any;
-    setIsUserTouched: Function;
-    getBurgers: Function;
-}> = (props) => {
+interface LoginProps {
+    userValues: User;
+    setUserValues: React.Dispatch<React.SetStateAction<User>>;
+    getBurgers: () => void;
+}
+
+const Login: React.FC<LoginProps> = ({
+    userValues,
+    setUserValues,
+    getBurgers
+}) => {
     const history = useHistory();
+    const { values, setValues, handleChange } = useForm(EMPTY_USER);
+    const { isValid, isTouched, validateInput, markAsTouched } =
+        useValidation<UserValidation>(EMPTY_VALID_USER, EMPTY_VALID_USER);
 
-    const handleInputChange = (ev: any) => {
-        const { name, value, checked, type } = ev.target;
-        let sendValue: any;
-        if (checked == true) {
-            sendValue = checked;
-        } else if (checked == false) {
-            sendValue = checked;
-        } else if (type == "number") {
-            sendValue = parseFloat(value);
-        } else {
-            sendValue = value;
-        }
-        props.setUserValues((previousValues: any) => ({
-            ...previousValues,
-            [name]: sendValue
-        }));
-    };
-
-    const validateInput = (ev: any) => {
-        const { name, value, checked, type } = ev.target;
-        let validInput: any;
-        if (type == "email") {
-            validInput = validateEmail(value);
-        } else if (type == "password") {
-            validInput = validatePassword(value);
-        }
-        props.setIsUserValid((previousValues: any) => ({
-            ...previousValues,
-            [name]: validInput
-        }));
-    };
-
-    const loginUser = async (ev: any) => {
-        const dataUser = await props.getUserLogin({
-            variables: props.userValues
-        });
-        if (dataUser?.data?.getUserByEmailPassword) {
-            props.setUserValues(dataUser?.data?.getUserByEmailPassword);
-            props.getBurgers();
-            history.push("/home");
-        }
-    };
+    const [getUserLogin, { loading, error }] = useLazyQuery(LOGIN_USER_QUERY, {
+        fetchPolicy: "network-only"
+    });
 
     useEffect(() => {
-        if (props.userValues.token) {
-            window.location.href = "/home";
+        if (userValues.token) {
+            history.push("/home");
         }
-    }, [props.userValues]);
+    }, [userValues, history]);
+
+    const loginUser = async () => {
+        try {
+            const { data } = await getUserLogin({ variables: values });
+            if (data?.getUserByEmailPassword) {
+                setUserValues(data.getUserByEmailPassword);
+                getBurgers();
+                history.push("/home");
+            }
+        } catch (err) {
+            console.error("Login error:", err);
+        }
+    };
+
+    const isFormValid = isValid.email && isValid.password;
 
     return (
         <BasePage title="Login" footer="">
-            {props.errorUserLogin ? (
-                <pre>{props.errorUserLogin.message}</pre>
-            ) : (
-                ""
-            )}
-            {props.loadingUserLogin ? (
-                <p>Login...</p>
-            ) : (
-                <form>
-                    <IonList>
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.email}
-                                className={`${
-                                    props.isUserValid.email && "ion-valid"
-                                } ${
-                                    props.isUserValid.email === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.email && "ion-touched"
-                                }`}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                errorText="Invalid email"
-                                placeholder="email@domain.com"
-                                name="email"
-                                label="Email:"
-                                type="email"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["email"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
+            <IonCard>
+                <IonCardHeader>
+                    <IonCardTitle className="ion-text-center">
+                        <h1>Welcome Back!</h1>
+                    </IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                    {error && (
+                        <IonText color="danger">
+                            <p className="ion-text-center">{error.message}</p>
+                        </IonText>
+                    )}
 
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.password}
-                                className={`${
-                                    props.isUserValid.password && "ion-valid"
-                                } ${
-                                    props.isUserValid.password === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.password &&
-                                    "ion-touched"
-                                }`}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                errorText="Invalid password"
-                                name="password"
-                                label="Password:"
-                                type="password"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["password"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
-                    </IonList>
+                    {loading ? (
+                        <LoadingSpinner message="Logging in..." />
+                    ) : (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (isFormValid) loginUser();
+                            }}
+                        >
+                            <IonList>
+                                <IonItem>
+                                    <IonIcon icon={mailOutline} slot="start" />
+                                    <IonInput
+                                        value={values.email}
+                                        className={`${
+                                            isValid.email && "ion-valid"
+                                        } ${
+                                            isValid.email === false &&
+                                            "ion-invalid"
+                                        } ${isTouched.email && "ion-touched"}`}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        errorText="Invalid email"
+                                        placeholder="email@domain.com"
+                                        name="email"
+                                        label="Email"
+                                        labelPlacement="floating"
+                                        type="email"
+                                        onIonBlur={() => markAsTouched("email")}
+                                    />
+                                </IonItem>
 
-                    <IonButton
-                        disabled={
-                            !props.isUserValid.email ||
-                            !props.isUserValid.password
-                        }
-                        type="button"
-                        color="primary"
-                        expand="full"
-                        onClick={(ev) => loginUser(ev)}
-                    >
-                        Login
-                    </IonButton>
-                </form>
-            )}
+                                <IonItem>
+                                    <IonIcon
+                                        icon={lockClosedOutline}
+                                        slot="start"
+                                    />
+                                    <IonInput
+                                        value={values.password}
+                                        className={`${
+                                            isValid.password && "ion-valid"
+                                        } ${
+                                            isValid.password === false &&
+                                            "ion-invalid"
+                                        } ${
+                                            isTouched.password && "ion-touched"
+                                        }`}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        errorText="Invalid password"
+                                        name="password"
+                                        label="Password"
+                                        labelPlacement="floating"
+                                        type="password"
+                                        onIonBlur={() =>
+                                            markAsTouched("password")
+                                        }
+                                    />
+                                </IonItem>
+                            </IonList>
+
+                            <IonButton
+                                disabled={!isFormValid}
+                                type="submit"
+                                color="primary"
+                                expand="block"
+                                className="ion-margin-top"
+                            >
+                                Login
+                            </IonButton>
+                        </form>
+                    )}
+                </IonCardContent>
+            </IonCard>
         </BasePage>
     );
 };

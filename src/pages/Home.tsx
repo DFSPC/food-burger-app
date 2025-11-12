@@ -1,156 +1,114 @@
+import React, { useEffect } from "react";
 import {
     IonAccordionGroup,
-    IonAccordion,
-    IonAlert,
-    IonButton,
-    IonItem,
-    IonLabel,
     IonRefresher,
     IonRefresherContent,
     RefresherEventDetail,
-    IonRow,
-    IonCol,
-    IonGrid
+    IonText
 } from "@ionic/react";
-
 import { useHistory } from "react-router-dom";
-import BasePage from "./../BasePage";
-
+import { useMutation } from "@apollo/client";
+import BasePage from "../BasePage";
+import BurgerCard from "../components/BurgerCard";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { DELETE_BURGER_QUERY } from "../common/graphql.querys";
 import { FULL_VALID_BURGER } from "../common/consts";
+import { User, Burger } from "../types";
 
-import React, { useEffect } from "react";
-
-const Home: React.FC<{
-    setBurgerValues: Function;
-    userValues: any;
-    setUserValues: Function;
-    getBurgers: Function;
+interface HomeProps {
+    userValues: User;
+    setBurgerValues: React.Dispatch<React.SetStateAction<Burger>>;
+    getBurgers: () => void;
     dataGetBurgers: any;
     loadingGetBurgers: boolean;
     errorGetBurgers: any;
-    deleteBurger: Function;
-    loadingDeleteBurger: boolean;
-    setIsBurgerValid: Function;
-    setIsBurgerTouched: Function;
-}> = (props) => {
+    setIsBurgerValid: React.Dispatch<React.SetStateAction<any>>;
+    setIsBurgerTouched: React.Dispatch<React.SetStateAction<any>>;
+}
+
+const Home: React.FC<HomeProps> = ({
+    userValues,
+    setBurgerValues,
+    getBurgers,
+    dataGetBurgers,
+    loadingGetBurgers,
+    errorGetBurgers,
+    setIsBurgerValid,
+    setIsBurgerTouched
+}) => {
     const history = useHistory();
+    const [deleteBurger, { loading: loadingDelete }] =
+        useMutation(DELETE_BURGER_QUERY);
+
+    useEffect(() => {
+        if (userValues.email) {
+            getBurgers();
+        }
+    }, [userValues, getBurgers]);
 
     const reload = (event: CustomEvent<RefresherEventDetail>) => {
-        props.getBurgers();
+        getBurgers();
         event.detail.complete();
     };
 
-    const editBurger = async (burger: any) => {
-        props.setBurgerValues(burger);
-        props.setIsBurgerValid(FULL_VALID_BURGER);
-        props.setIsBurgerTouched(FULL_VALID_BURGER);
+    const editBurger = (burger: Burger) => {
+        setBurgerValues(burger);
+        setIsBurgerValid(FULL_VALID_BURGER);
+        setIsBurgerTouched(FULL_VALID_BURGER);
         history.push("/update");
     };
 
     const removeBurger = async (id: string) => {
-        const data = await props.deleteBurger({ variables: { id: id } });
-        if (data.data?.deleteProduct) {
-            props.getBurgers();
+        try {
+            const { data } = await deleteBurger({ variables: { id } });
+            if (data?.deleteProduct) {
+                getBurgers();
+            }
+        } catch (error) {
+            console.error("Error deleting burger:", error);
         }
     };
 
-    useEffect(() => {
-        if (props.userValues.email) {
-            props.getBurgers();
-        }
-    }, [props.userValues]);
+    const isAdmin = userValues.rol === "admin";
 
     return (
         <BasePage
-            title="List of Burgers"
-            footer={`Logged as ${props.userValues.fullname}`}
+            title="🍔 Food Burger Menu 🍔"
+            footer={`👋 Welcome, ${userValues.fullname || "Guest"}!`}
         >
             <IonRefresher slot="fixed" onIonRefresh={reload}>
-                <IonRefresherContent></IonRefresherContent>
+                <IonRefresherContent />
             </IonRefresher>
-            {props.loadingGetBurgers || props.loadingDeleteBurger ? (
-                "Loading..."
+
+            {errorGetBurgers && (
+                <IonText color="danger">
+                    <p className="ion-text-center">{errorGetBurgers.message}</p>
+                </IonText>
+            )}
+
+            {loadingGetBurgers || loadingDelete ? (
+                <LoadingSpinner />
             ) : (
-                <IonAccordionGroup>
-                    {props.dataGetBurgers?.products
-                        ? props.dataGetBurgers.products.map((product: any) => (
-                              <IonAccordion key={product._id}>
-                                  <IonItem slot="header">
-                                      <IonLabel>{product.title}</IonLabel>
-                                  </IonItem>
-                                  <div className="ion-padding" slot="content">
-                                      <ul>
-                                          <li>
-                                              Description: {product.description}
-                                          </li>
-                                          <li>Price: {product.price}</li>
-                                          <li>Image:</li>
-                                      </ul>
-                                      <img src={product.img_url}></img>
-                                      {props.userValues.rol == "admin" ? (
-                                          <>
-                                              <IonGrid>
-                                                  <IonRow>
-                                                      <IonCol class="ion-text-center">
-                                                          <IonButton
-                                                              color="primary"
-                                                              expand="full"
-                                                              onClick={(ev) =>
-                                                                  editBurger(
-                                                                      product
-                                                                  )
-                                                              }
-                                                          >
-                                                              Edit
-                                                          </IonButton>
-                                                      </IonCol>
-                                                      <IonCol class="ion-text-center">
-                                                          <IonButton
-                                                              id={`delete-alert-${product._id}`}
-                                                              color="primary"
-                                                              expand="full"
-                                                          >
-                                                              Delete
-                                                          </IonButton>
-                                                      </IonCol>
-                                                  </IonRow>
-                                              </IonGrid>
-                                              <IonAlert
-                                                  header="Delete Burger?"
-                                                  trigger={`delete-alert-${product._id}`}
-                                                  buttons={[
-                                                      {
-                                                          text: "Cancel",
-                                                          role: "cancel",
-                                                          handler: () => {
-                                                              return false;
-                                                          }
-                                                      },
-                                                      {
-                                                          text: "OK",
-                                                          role: "confirm",
-                                                          handler: () => {
-                                                              removeBurger(
-                                                                  product._id
-                                                              );
-                                                          }
-                                                      }
-                                                  ]}
-                                                  onDidDismiss={({
-                                                      detail
-                                                  }) => {
-                                                      return false;
-                                                  }}
-                                              ></IonAlert>
-                                          </>
-                                      ) : (
-                                          ""
-                                      )}
-                                  </div>
-                              </IonAccordion>
-                          ))
-                        : ""}
-                </IonAccordionGroup>
+                <>
+                    {dataGetBurgers?.products &&
+                    dataGetBurgers.products.length > 0 ? (
+                        <IonAccordionGroup>
+                            {dataGetBurgers.products.map((product: Burger) => (
+                                <BurgerCard
+                                    key={product._id}
+                                    burger={product}
+                                    isAdmin={isAdmin}
+                                    onEdit={editBurger}
+                                    onDelete={removeBurger}
+                                />
+                            ))}
+                        </IonAccordionGroup>
+                    ) : (
+                        <IonText className="ion-text-center ion-padding">
+                            <p>No burgers available yet. Check back later!</p>
+                        </IonText>
+                    )}
+                </>
             )}
         </BasePage>
     );

@@ -1,219 +1,214 @@
-import { IonButton, IonItem, IonInput, IonList } from "@ionic/react";
-import BasePage from "./../BasePage";
-import { useHistory } from "react-router-dom";
+import React from "react";
 import {
-    validateEmail,
-    validatePassword,
-    validateText,
-    validateNumber
-} from "./../common/validate";
+    IonButton,
+    IonItem,
+    IonInput,
+    IonList,
+    IonText,
+    IonIcon,
+    IonCard,
+    IonCardContent,
+    IonCardHeader,
+    IonCardTitle
+} from "@ionic/react";
+import {
+    personOutline,
+    mailOutline,
+    lockClosedOutline,
+    callOutline
+} from "ionicons/icons";
+import { useHistory } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import BasePage from "../BasePage";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { useForm } from "../hooks/useForm";
+import { useValidation } from "../hooks/useValidation";
+import { CREATE_USER_QUERY } from "../common/graphql.querys";
+import { EMPTY_USER, EMPTY_VALID_USER } from "../common/consts";
+import { User, UserValidation } from "../types";
 
-const Register: React.FC<{
-    userValues: any;
-    setUserValues: Function;
-    addUser: Function;
-    loadingAddUser: boolean;
-    errorAddUser: any;
-    isUserValid: any;
-    setIsUserValid: Function;
-    isUserTouched: any;
-    setIsUserTouched: Function;
-    getBurgers: Function;
-}> = (props) => {
+interface RegisterProps {
+    setUserValues: React.Dispatch<React.SetStateAction<User>>;
+    getBurgers: () => void;
+}
+
+const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
     const history = useHistory();
+    const { values, handleChange } = useForm(EMPTY_USER);
+    const { isValid, isTouched, validateInput, markAsTouched } =
+        useValidation<UserValidation>(EMPTY_VALID_USER, EMPTY_VALID_USER);
 
-    const handleInputChange = (ev: any) => {
-        const { name, value, checked, type } = ev.target;
-        let sendValue: any;
-        if (checked == true) {
-            sendValue = checked;
-        } else if (checked == false) {
-            sendValue = checked;
-        } else if (type == "number") {
-            sendValue = parseFloat(value);
-        } else {
-            sendValue = value;
+    const [addUser, { loading, error }] = useMutation(CREATE_USER_QUERY);
+
+    const registerUser = async () => {
+        try {
+            const { data } = await addUser({ variables: values });
+            if (data?.createUser) {
+                setUserValues(data.createUser);
+                getBurgers();
+                history.push("/home");
+            }
+        } catch (err) {
+            console.error("Registration error:", err);
         }
-        props.setUserValues((previousValues: any) => ({
-            ...previousValues,
-            [name]: sendValue
-        }));
     };
 
-    const validateInput = (ev: any) => {
-        const { name, value, checked, type } = ev.target;
-        let validInput: any;
-        if (type == "email") {
-            validInput = validateEmail(value);
-        } else if (type == "password") {
-            validInput = validatePassword(value);
-        } else if (type == "text") {
-            validInput = validateText(value);
-        } else if (type == "number") {
-            validInput = validateNumber(value);
-        }
-        props.setIsUserValid((previousValues: any) => ({
-            ...previousValues,
-            [name]: validInput
-        }));
-    };
-
-    const registerUser = async (ev: any) => {
-        const data = await props.addUser({ variables: props.userValues });
-        props.setUserValues(data?.data?.createUser);
-        props.getBurgers();
-        history.push("/home");
-    };
+    const isFormValid =
+        isValid.email &&
+        isValid.password &&
+        isValid.fullname &&
+        isValid.cellphone;
 
     return (
         <BasePage title="Register" footer="">
-            {props.errorAddUser ? <pre>{props.errorAddUser.message}</pre> : ""}
-            {props.loadingAddUser ? (
-                <p>Register...</p>
-            ) : (
-                <form>
-                    <IonList>
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.fullname}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                name="fullname"
-                                label="Full Name:"
-                                className={`${
-                                    props.isUserValid.fullname && "ion-valid"
-                                } ${
-                                    props.isUserValid.fullname === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.fullname &&
-                                    "ion-touched"
-                                }`}
-                                errorText="Invalid Full Name"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["fullname"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
+            <IonCard>
+                <IonCardHeader>
+                    <IonCardTitle className="ion-text-center">
+                        <h1>Create Account</h1>
+                    </IonCardTitle>
+                </IonCardHeader>
+                <IonCardContent>
+                    {error && (
+                        <IonText color="danger">
+                            <p className="ion-text-center">{error.message}</p>
+                        </IonText>
+                    )}
 
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.email}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                name="email"
-                                label="Email:"
-                                type="email"
-                                className={`${
-                                    props.isUserValid.email && "ion-valid"
-                                } ${
-                                    props.isUserValid.email === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.email && "ion-touched"
-                                }`}
-                                placeholder="email@domain.com"
-                                errorText="Invalid Email"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["email"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
+                    {loading ? (
+                        <LoadingSpinner message="Creating account..." />
+                    ) : (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (isFormValid) registerUser();
+                            }}
+                        >
+                            <IonList>
+                                <IonItem>
+                                    <IonIcon
+                                        icon={personOutline}
+                                        slot="start"
+                                    />
+                                    <IonInput
+                                        value={values.fullname}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        name="fullname"
+                                        label="Full Name"
+                                        labelPlacement="floating"
+                                        className={`${
+                                            isValid.fullname && "ion-valid"
+                                        } ${
+                                            isValid.fullname === false &&
+                                            "ion-invalid"
+                                        } ${
+                                            isTouched.fullname && "ion-touched"
+                                        }`}
+                                        errorText="Invalid Full Name"
+                                        onIonBlur={() =>
+                                            markAsTouched("fullname")
+                                        }
+                                    />
+                                </IonItem>
 
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.password}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                name="password"
-                                label="Password:"
-                                type="password"
-                                className={`${
-                                    props.isUserValid.password && "ion-valid"
-                                } ${
-                                    props.isUserValid.password === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.password &&
-                                    "ion-touched"
-                                }`}
-                                errorText="Invalid Password"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["password"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
+                                <IonItem>
+                                    <IonIcon icon={mailOutline} slot="start" />
+                                    <IonInput
+                                        value={values.email}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        name="email"
+                                        label="Email"
+                                        labelPlacement="floating"
+                                        type="email"
+                                        className={`${
+                                            isValid.email && "ion-valid"
+                                        } ${
+                                            isValid.email === false &&
+                                            "ion-invalid"
+                                        } ${isTouched.email && "ion-touched"}`}
+                                        placeholder="email@domain.com"
+                                        errorText="Invalid Email"
+                                        onIonBlur={() => markAsTouched("email")}
+                                    />
+                                </IonItem>
 
-                        <IonItem>
-                            <IonInput
-                                value={props.userValues.cellphone}
-                                onIonInput={(ev) => {
-                                    handleInputChange(ev);
-                                    validateInput(ev);
-                                }}
-                                name="cellphone"
-                                label="Cellphone:"
-                                type="number"
-                                className={`${
-                                    props.isUserValid.cellphone && "ion-valid"
-                                } ${
-                                    props.isUserValid.cellphone === false &&
-                                    "ion-invalid"
-                                } ${
-                                    props.isUserTouched.cellphone &&
-                                    "ion-touched"
-                                }`}
-                                errorText="Invalid Cellphone"
-                                placeholder="3XXXXXXXXX"
-                                onIonBlur={() =>
-                                    props.setIsUserTouched(
-                                        (previousValues: any) => ({
-                                            ...previousValues,
-                                            ["cellphone"]: true
-                                        })
-                                    )
-                                }
-                            ></IonInput>
-                        </IonItem>
-                    </IonList>
+                                <IonItem>
+                                    <IonIcon
+                                        icon={lockClosedOutline}
+                                        slot="start"
+                                    />
+                                    <IonInput
+                                        value={values.password}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        name="password"
+                                        label="Password"
+                                        labelPlacement="floating"
+                                        type="password"
+                                        className={`${
+                                            isValid.password && "ion-valid"
+                                        } ${
+                                            isValid.password === false &&
+                                            "ion-invalid"
+                                        } ${
+                                            isTouched.password && "ion-touched"
+                                        }`}
+                                        errorText="Invalid Password"
+                                        onIonBlur={() =>
+                                            markAsTouched("password")
+                                        }
+                                    />
+                                </IonItem>
 
-                    <IonButton
-                        disabled={
-                            !props.isUserValid.email ||
-                            !props.isUserValid.password ||
-                            !props.isUserValid.fullname ||
-                            !props.isUserValid.cellphone
-                        }
-                        type="button"
-                        color="primary"
-                        expand="full"
-                        onClick={(ev) => registerUser(ev)}
-                    >
-                        Register
-                    </IonButton>
-                </form>
-            )}
+                                <IonItem>
+                                    <IonIcon icon={callOutline} slot="start" />
+                                    <IonInput
+                                        value={values.cellphone}
+                                        onIonInput={(ev) => {
+                                            handleChange(ev);
+                                            validateInput(ev);
+                                        }}
+                                        name="cellphone"
+                                        label="Phone Number"
+                                        labelPlacement="floating"
+                                        type="number"
+                                        className={`${
+                                            isValid.cellphone && "ion-valid"
+                                        } ${
+                                            isValid.cellphone === false &&
+                                            "ion-invalid"
+                                        } ${
+                                            isTouched.cellphone && "ion-touched"
+                                        }`}
+                                        errorText="Invalid Phone Number"
+                                        placeholder="3XXXXXXXXX"
+                                        onIonBlur={() =>
+                                            markAsTouched("cellphone")
+                                        }
+                                    />
+                                </IonItem>
+                            </IonList>
+
+                            <IonButton
+                                disabled={!isFormValid}
+                                type="submit"
+                                color="primary"
+                                expand="block"
+                                className="ion-margin-top"
+                            >
+                                Register
+                            </IonButton>
+                        </form>
+                    )}
+                </IonCardContent>
+            </IonCard>
         </BasePage>
     );
 };

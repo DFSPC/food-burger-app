@@ -1,40 +1,83 @@
+import React, { ReactNode } from "react";
 import {
-    IonLabel,
     IonContent,
     IonHeader,
     IonPage,
     IonTitle,
     IonToolbar,
-    IonFooter
+    IonFooter,
+    IonText
 } from "@ionic/react";
-import { PropsWithChildren, ReactNode } from "react";
 
-type TitleFooterProps = {
+interface BasePageProps {
     title: string;
-    footer: string;
-};
-
-const BasePage: React.FC<{
-    title: string;
-    footer: string;
+    footer?: string;
     children?: ReactNode;
-}> = (props: PropsWithChildren<TitleFooterProps>) => {
+}
+
+const BasePage: React.FC<BasePageProps> = ({ title, footer, children }) => {
     return (
         <IonPage>
-            <IonHeader>
-                <IonToolbar className="ion-text-center">
-                    <IonTitle>{props.title}</IonTitle>
+            <IonHeader translucent>
+                <IonToolbar
+                    color="primary"
+                    style={{
+                        "--background":
+                            "linear-gradient(135deg, #ff3b30 0%, #ff6b59 100%)",
+                        "--padding-top": "16px",
+                        "--padding-bottom": "16px"
+                    }}
+                >
+                    <IonTitle
+                        className="ion-text-center"
+                        style={{
+                            fontSize: "16px",
+                            fontWeight: "700",
+                            textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                            letterSpacing: "0.3px"
+                        }}
+                    >
+                        {title}
+                    </IonTitle>
                 </IonToolbar>
             </IonHeader>
-            <IonContent className="ion-padding">{props.children}</IonContent>
-            {props.footer ? (
+            <IonContent fullscreen className="ion-padding">
+                <IonHeader collapse="condense">
+                    <IonToolbar>
+                        <IonTitle size="large">{title}</IonTitle>
+                    </IonToolbar>
+                </IonHeader>
+                {children}
+            </IonContent>
+            {footer && (
                 <IonFooter>
-                    <IonToolbar className="ion-text-center">
-                        <IonLabel>{props.footer}</IonLabel>
+                    <IonToolbar
+                        style={{
+                            "--background":
+                                "linear-gradient(135deg, #007aff 0%, #1a8bff 100%)",
+                            "--padding-top": "12px",
+                            "--padding-bottom": "12px"
+                        }}
+                    >
+                        <div
+                            style={{
+                                textAlign: "center",
+                                padding: "8px 16px"
+                            }}
+                        >
+                            <IonText
+                                style={{
+                                    fontSize: "16px",
+                                    fontWeight: "700",
+                                    color: "#ffffff",
+                                    textShadow: "0 2px 4px rgba(0,0,0,0.2)"
+                                }}
+                            >
+                                {footer}
+                            </IonText>
+                        </div>
                     </IonToolbar>
                 </IonFooter>
-            ) : (
-                <></>
             )}
         </IonPage>
     );

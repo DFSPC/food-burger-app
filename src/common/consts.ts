@@ -2,7 +2,7 @@ export const EMPTY_BURGER = {
     _id: "",
     title: "",
     description: "",
-    price: "",
+    price: "" as number | string,
     featured: false,
     img_url: "",
     img_blob: ""
@@ -25,7 +25,7 @@ export const EMPTY_USER = {
     fullname: "",
     email: "",
     password: "",
-    cellphone: "",
+    cellphone: "" as number | string,
     rol: "",
     token: ""
 };
