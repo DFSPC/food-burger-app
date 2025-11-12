@@ -156,13 +156,10 @@ const App: React.FC = () => {
                                 <Home
                                     userValues={userValues}
                                     setBurgerValues={setBurgerValues}
-                                    setUserValues={setUserValues}
                                     getBurgers={getBurgers}
                                     dataGetBurgers={dataGetBurgers}
                                     loadingGetBurgers={loadingGetBurgers}
                                     errorGetBurgers={errorGetBurgers}
-                                    deleteBurger={deleteBurger}
-                                    loadingDeleteBurger={loadingDeleteBurger}
                                     setIsBurgerValid={setIsBurgerValid}
                                     setIsBurgerTouched={setIsBurgerTouched}
                                 />
@@ -180,12 +177,6 @@ const App: React.FC = () => {
                                     setIsBurgerValid={setIsBurgerValid}
                                     isBurgerTouched={isBurgerTouched}
                                     setIsBurgerTouched={setIsBurgerTouched}
-                                    addBurger={addBurger}
-                                    loadingAddBurger={loadingAddBurger}
-                                    errorAddBurger={errorAddBurger}
-                                    editBurger={editBurger}
-                                    loadingEditBurger={loadingEditBurger}
-                                    errorEditBurger={errorEditBurger}
                                     getBurgers={getBurgers}
                                 />
                             )}
@@ -202,12 +193,6 @@ const App: React.FC = () => {
                                     setIsBurgerValid={setIsBurgerValid}
                                     isBurgerTouched={isBurgerTouched}
                                     setIsBurgerTouched={setIsBurgerTouched}
-                                    addBurger={addBurger}
-                                    loadingAddBurger={loadingAddBurger}
-                                    errorAddBurger={errorAddBurger}
-                                    editBurger={editBurger}
-                                    loadingEditBurger={loadingEditBurger}
-                                    errorEditBurger={errorEditBurger}
                                     getBurgers={getBurgers}
                                 />
                             )}
@@ -219,13 +204,6 @@ const App: React.FC = () => {
                                 <Login
                                     userValues={userValues}
                                     setUserValues={setUserValues}
-                                    getUserLogin={getUserLogin}
-                                    loadingUserLogin={loadingUserLogin}
-                                    errorUserLogin={errorUserLogin}
-                                    isUserValid={isUserValid}
-                                    setIsUserValid={setIsUserValid}
-                                    isUserTouched={isUserTouched}
-                                    setIsUserTouched={setIsUserTouched}
                                     getBurgers={getBurgers}
                                 />
                             )}
@@ -235,15 +213,7 @@ const App: React.FC = () => {
                             path="/register"
                             render={() => (
                                 <Register
-                                    userValues={userValues}
                                     setUserValues={setUserValues}
-                                    addUser={addUser}
-                                    loadingAddUser={loadingAddUser}
-                                    errorAddUser={errorAddUser}
-                                    isUserValid={isUserValid}
-                                    setIsUserValid={setIsUserValid}
-                                    isUserTouched={isUserTouched}
-                                    setIsUserTouched={setIsUserTouched}
                                     getBurgers={getBurgers}
                                 />
                             )}

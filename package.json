@@ -43,6 +43,7 @@
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.5",
     "jsdom": "^22.1.0",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.3",
     "vite": "^4.5.14",
     "vitest": "^0.32.4"
