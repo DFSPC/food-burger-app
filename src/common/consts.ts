@@ -1,4 +1,4 @@
-export const EMPTY_BURGER = {
+export const EMPTY_PRODUCT = {
     _id: "",
     title: "",
     description: "",
@@ -8,13 +8,13 @@ export const EMPTY_BURGER = {
     img_blob: ""
 };
 
-export const EMPTY_VALID_BURGER = {
+export const EMPTY_VALID_PRODUCT = {
     title: false,
     description: false,
     price: false
 };
 
-export const FULL_VALID_BURGER = {
+export const FULL_VALID_PRODUCT = {
     title: true,
     description: true,
     price: true

@@ -8,12 +8,11 @@ import {
   IonIcon,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
 } from '@ionic/react';
 import { mailOutline, lockClosedOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { useLazyQuery } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import BasePage from '../BasePage';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useForm } from '../hooks/useForm';
@@ -25,10 +24,11 @@ import { User, UserValidation } from '../types';
 interface LoginProps {
   userValues: User;
   setUserValues: React.Dispatch<React.SetStateAction<User>>;
-  getBurgers: () => void;
+  getProducts: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) => {
+const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getProducts }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { values, setValues, handleChange } = useForm(EMPTY_USER);
   const { isValid, isTouched, validateInput, markAsTouched } =
@@ -49,7 +49,7 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
       const { data } = await getUserLogin({ variables: values });
       if (data?.getUserByEmailPassword) {
         setUserValues(data.getUserByEmailPassword);
-        getBurgers();
+        getProducts();
         history.push('/home');
       }
     } catch (err) {
@@ -60,13 +60,8 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
   const isFormValid = isValid.email && isValid.password;
 
   return (
-    <BasePage title="Login" footer="">
+    <BasePage title={t('login.title')} footer="">
       <IonCard>
-        <IonCardHeader>
-          <IonCardTitle className="ion-text-center">
-            <h1>Welcome Back!</h1>
-          </IonCardTitle>
-        </IonCardHeader>
         <IonCardContent>
           {error && (
             <IonText color="danger">
@@ -75,7 +70,7 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
           )}
 
           {loading ? (
-            <LoadingSpinner message="Logging in..." />
+            <LoadingSpinner message={t('login.loggingIn')} />
           ) : (
             <form
               onSubmit={(e) => {
@@ -95,10 +90,10 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
                       handleChange(ev);
                       validateInput(ev);
                     }}
-                    errorText="Invalid email"
+                    errorText={t('login.invalidEmail')}
                     placeholder="email@domain.com"
                     name="email"
-                    label="Email"
+                    label={t('login.email')}
                     labelPlacement="floating"
                     type="email"
                     onIonBlur={() => markAsTouched('email')}
@@ -116,9 +111,9 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
                       handleChange(ev);
                       validateInput(ev);
                     }}
-                    errorText="Invalid password"
+                    errorText={t('login.invalidPassword')}
                     name="password"
-                    label="Password"
+                    label={t('login.password')}
                     labelPlacement="floating"
                     type="password"
                     onIonBlur={() => markAsTouched('password')}
@@ -133,7 +128,7 @@ const Login: React.FC<LoginProps> = ({ userValues, setUserValues, getBurgers }) 
                 expand="block"
                 className="ion-margin-top"
               >
-                Login
+                {t('login.title')}
               </IonButton>
             </form>
           )}

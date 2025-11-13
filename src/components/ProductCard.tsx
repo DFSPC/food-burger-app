@@ -16,24 +16,26 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { pricetagOutline, star } from 'ionicons/icons';
-import { Burger } from '../types';
+import { useTranslation } from 'react-i18next';
+import { Product } from '../types';
 
-interface BurgerCardProps {
-  burger: Burger;
+interface ProductCardProps {
+  product: Product;
   isAdmin: boolean;
-  onEdit: (burger: Burger) => void;
+  onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
 }
 
-const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDelete }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin, onEdit, onDelete }) => {
+  const { t } = useTranslation();
   return (
-    <IonAccordion key={burger._id}>
+    <IonAccordion key={product._id}>
       <IonItem slot="header" color="light">
         <IonLabel>
-          <h2>{burger.title}</h2>
-          <p className="ion-text-wrap">{burger.description}</p>
+          <h2>{product.title}</h2>
+          <p className="ion-text-wrap">{product.description}</p>
         </IonLabel>
-        {burger.featured && (
+        {product.featured && (
           <IonChip
             color="warning"
             slot="end"
@@ -52,10 +54,10 @@ const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDele
       </IonItem>
       <IonCardContent slot="content" className="ion-padding">
         <IonCard>
-          {burger.img_url && (
+          {product.img_url && (
             <img
-              src={burger.img_url}
-              alt={burger.title}
+              src={product.img_url}
+              alt={product.title}
               style={{
                 width: '100%',
                 height: 'auto',
@@ -76,7 +78,7 @@ const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDele
               textShadow: '0 2px 4px rgba(255,255,255,0.5)'
             }}>
               <IonIcon icon={pricetagOutline} style={{ fontSize: '28px' }} />
-              ${burger.price}
+              ${product.price}
             </IonCardTitle>
           </IonCardHeader>
         </IonCard>
@@ -85,17 +87,17 @@ const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDele
           <IonGrid>
             <IonRow>
               <IonCol size="6">
-                <IonButton color="primary" expand="block" onClick={() => onEdit(burger)}>
-                  Edit
+                <IonButton color="primary" expand="block" onClick={() => onEdit(product)}>
+                  {t('common.edit')}
                 </IonButton>
               </IonCol>
               <IonCol size="6">
                 <IonButton
-                  id={`delete-alert-${burger._id}`}
+                  id={`delete-alert-${product._id}`}
                   color="danger"
                   expand="block"
                 >
-                  Delete
+                  {t('common.delete')}
                 </IonButton>
               </IonCol>
             </IonRow>
@@ -103,18 +105,18 @@ const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDele
         )}
 
         <IonAlert
-          header="Delete Burger?"
-          message="Are you sure you want to delete this burger?"
-          trigger={`delete-alert-${burger._id}`}
+          header={t('alerts.deleteProduct')}
+          message={t('alerts.deleteProductMessage')}
+          trigger={`delete-alert-${product._id}`}
           buttons={[
             {
-              text: 'Cancel',
+              text: t('common.cancel'),
               role: 'cancel',
             },
             {
-              text: 'Delete',
+              text: t('common.delete'),
               role: 'confirm',
-              handler: () => onDelete(burger._id),
+              handler: () => onDelete(product._id),
             },
           ]}
         />
@@ -123,4 +125,4 @@ const BurgerCard: React.FC<BurgerCardProps> = ({ burger, isAdmin, onEdit, onDele
   );
 };
 
-export default BurgerCard;
+export default ProductCard;

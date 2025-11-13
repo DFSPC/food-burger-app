@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const GET_BURGERS_QUERY = gql`
+export const GET_PRODUCTS_QUERY = gql`
     query Products {
         products {
             _id
@@ -13,7 +13,7 @@ export const GET_BURGERS_QUERY = gql`
     }
 `;
 
-export const CREATE_BURGERS_QUERY = gql`
+export const CREATE_PRODUCT_QUERY = gql`
     mutation CreateProduct(
         $title: String!
         $img_blob: String
@@ -41,7 +41,7 @@ export const CREATE_BURGERS_QUERY = gql`
     }
 `;
 
-export const UPDATE_BURGER_QUERY = gql`
+export const UPDATE_PRODUCT_QUERY = gql`
     mutation UpdateProduct(
         $_id: ID!
         $title: String!
@@ -71,7 +71,7 @@ export const UPDATE_BURGER_QUERY = gql`
     }
 `;
 
-export const DELETE_BURGER_QUERY = gql`
+export const DELETE_PRODUCT_QUERY = gql`
     mutation DeleteProduct($id: ID!) {
         deleteProduct(_id: $id)
     }

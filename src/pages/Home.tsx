@@ -8,63 +8,65 @@ import {
 } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import BasePage from '../BasePage';
-import BurgerCard from '../components/BurgerCard';
+import ProductCard from '../components/ProductCard';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { DELETE_BURGER_QUERY } from '../common/graphql.querys';
-import { FULL_VALID_BURGER } from '../common/consts';
-import { User, Burger } from '../types';
+import { DELETE_PRODUCT_QUERY } from '../common/graphql.querys';
+import { FULL_VALID_PRODUCT } from '../common/consts';
+import { User, Product } from '../types';
 
 interface HomeProps {
   userValues: User;
-  setBurgerValues: React.Dispatch<React.SetStateAction<Burger>>;
-  getBurgers: () => void;
-  dataGetBurgers: any;
-  loadingGetBurgers: boolean;
-  errorGetBurgers: any;
-  setIsBurgerValid: React.Dispatch<React.SetStateAction<any>>;
-  setIsBurgerTouched: React.Dispatch<React.SetStateAction<any>>;
+  setProductValues: React.Dispatch<React.SetStateAction<Product>>;
+  getProducts: () => void;
+  dataGetProducts: any;
+  loadingGetProducts: boolean;
+  errorGetProducts: any;
+  setIsProductValid: React.Dispatch<React.SetStateAction<any>>;
+  setIsProductTouched: React.Dispatch<React.SetStateAction<any>>;
 }
 
 const Home: React.FC<HomeProps> = ({
   userValues,
-  setBurgerValues,
-  getBurgers,
-  dataGetBurgers,
-  loadingGetBurgers,
-  errorGetBurgers,
-  setIsBurgerValid,
-  setIsBurgerTouched,
+  setProductValues,
+  getProducts,
+  dataGetProducts,
+  loadingGetProducts,
+  errorGetProducts,
+  setIsProductValid,
+  setIsProductTouched,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
-  const [deleteBurger, { loading: loadingDelete }] = useMutation(DELETE_BURGER_QUERY);
+  const [deleteProduct, { loading: loadingDelete }] = useMutation(DELETE_PRODUCT_QUERY);
 
   useEffect(() => {
     if (userValues.email) {
-      getBurgers();
+      getProducts();
     }
-  }, [userValues, getBurgers]);
+  }, [userValues, getProducts]);
 
   const reload = (event: CustomEvent<RefresherEventDetail>) => {
-    getBurgers();
+    getProducts();
     event.detail.complete();
   };
 
-  const editBurger = (burger: Burger) => {
-    setBurgerValues(burger);
-    setIsBurgerValid(FULL_VALID_BURGER);
-    setIsBurgerTouched(FULL_VALID_BURGER);
+  const editProduct = (product: Product) => {
+    setProductValues(product);
+    setIsProductValid(FULL_VALID_PRODUCT);
+    setIsProductTouched(FULL_VALID_PRODUCT);
     history.push('/update');
   };
 
-  const removeBurger = async (id: string) => {
+  const removeProduct = async (id: string) => {
     try {
-      const { data } = await deleteBurger({ variables: { id } });
+      const { data } = await deleteProduct({ variables: { id } });
       if (data?.deleteProduct) {
-        getBurgers();
+        getProducts();
       }
     } catch (error) {
-      console.error('Error deleting burger:', error);
+      console.error('Error deleting product:', error);
     }
   };
 
@@ -72,38 +74,38 @@ const Home: React.FC<HomeProps> = ({
 
   return (
     <BasePage
-      title="🍔 Food Burger Menu 🍔"
-      footer={`👋 Welcome, ${userValues.fullname || 'Guest'}!`}
+      title={t('home.title')}
+      footer={t('home.welcome', { name: userValues.fullname || t('common.guest') })}
     >
       <IonRefresher slot="fixed" onIonRefresh={reload}>
         <IonRefresherContent />
       </IonRefresher>
 
-      {errorGetBurgers && (
+      {errorGetProducts && (
         <IonText color="danger">
-          <p className="ion-text-center">{errorGetBurgers.message}</p>
+          <p className="ion-text-center">{errorGetProducts.message}</p>
         </IonText>
       )}
 
-      {loadingGetBurgers || loadingDelete ? (
+      {loadingGetProducts || loadingDelete ? (
         <LoadingSpinner />
       ) : (
         <>
-          {dataGetBurgers?.products && dataGetBurgers.products.length > 0 ? (
+          {dataGetProducts?.products && dataGetProducts.products.length > 0 ? (
             <IonAccordionGroup>
-              {dataGetBurgers.products.map((product: Burger) => (
-                <BurgerCard
+              {dataGetProducts.products.map((product: Product) => (
+                <ProductCard
                   key={product._id}
-                  burger={product}
+                  product={product}
                   isAdmin={isAdmin}
-                  onEdit={editBurger}
-                  onDelete={removeBurger}
+                  onEdit={editProduct}
+                  onDelete={removeProduct}
                 />
               ))}
             </IonAccordionGroup>
           ) : (
             <IonText className="ion-text-center ion-padding">
-              <p>No burgers available yet. Check back later!</p>
+              <p>{t('home.noProducts')}</p>
             </IonText>
           )}
         </>

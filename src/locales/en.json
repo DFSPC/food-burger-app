@@ -1,0 +1,84 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "guest": "Guest",
+    "loading": "Loading...",
+    "create": "Create",
+    "update": "Update",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "ok": "OK",
+    "save": "Save",
+    "back": "Back"
+  },
+  "menu": {
+    "products": "Products",
+    "create": "Create",
+    "logout": "Log Out",
+    "login": "Login",
+    "register": "Register",
+    "settings": "Settings"
+  },
+  "home": {
+    "title": "🍽️ Delicious Food Menu 🍽️",
+    "welcome": "👋 Welcome, {{name}}!",
+    "noProducts": "No products available yet. Check back later!",
+    "deleteConfirm": "Delete Product?",
+    "deleteMessage": "Are you sure you want to delete this product?",
+    "errorDeleting": "Error deleting product"
+  },
+  "createUpdate": {
+    "createTitle": "Create New Product",
+    "editTitle": "Edit Product",
+    "productName": "Product Name",
+    "description": "Description",
+    "price": "Price",
+    "featuredItem": "Featured Item",
+    "image": "Image",
+    "errorProductName": "Please enter a product name",
+    "errorDescription": "Please enter a description",
+    "errorPrice": "Please enter a valid price",
+    "creating": "Creating...",
+    "updating": "Updating...",
+    "errorSaving": "Error saving product",
+    "errorCompressing": "Error compressing image"
+  },
+  "login": {
+    "title": "Login",
+    "welcomeBack": "Welcome Back!",
+    "email": "Email",
+    "password": "Password",
+    "invalidEmail": "Invalid email",
+    "invalidPassword": "Invalid password",
+    "loggingIn": "Logging in...",
+    "errorLogin": "Login error"
+  },
+  "register": {
+    "title": "Register",
+    "createAccount": "Create Account",
+    "fullName": "Full Name",
+    "email": "Email",
+    "password": "Password",
+    "phoneNumber": "Phone Number",
+    "invalidFullName": "Invalid Full Name",
+    "invalidEmail": "Invalid Email",
+    "invalidPassword": "Invalid Password",
+    "invalidPhone": "Invalid Phone Number",
+    "creatingAccount": "Creating account...",
+    "errorRegistration": "Registration error"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "languageChanged": "Language changed successfully"
+  },
+  "alerts": {
+    "logoutTitle": "Logout of App?",
+    "deleteProduct": "Delete Product?",
+    "deleteProductMessage": "Are you sure you want to delete this product?"
+  }
+}

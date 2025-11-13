@@ -18,7 +18,7 @@ interface BasePageProps {
 const BasePage: React.FC<BasePageProps> = ({ title, footer, children }) => {
   return (
     <IonPage>
-      <IonHeader translucent>
+      <IonHeader>
         <IonToolbar
           color="primary"
           style={{
@@ -40,12 +40,7 @@ const BasePage: React.FC<BasePageProps> = ({ title, footer, children }) => {
           </IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen className="ion-padding">
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">{title}</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+      <IonContent className="ion-padding">
         {children}
       </IonContent>
       {footer && (

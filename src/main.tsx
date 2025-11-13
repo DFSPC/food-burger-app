@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import './i18n';
 
 const client = new ApolloClient({
     uri: "https://food-burger.vercel.app/api",

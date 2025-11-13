@@ -9,8 +9,6 @@ import {
   IonIcon,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonLabel,
 } from '@ionic/react';
 import {
@@ -22,64 +20,106 @@ import {
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import BasePage from '../BasePage';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useForm } from '../hooks/useForm';
 import { useValidation } from '../hooks/useValidation';
 import {
-  CREATE_BURGERS_QUERY,
-  UPDATE_BURGER_QUERY,
+  CREATE_PRODUCT_QUERY,
+  UPDATE_PRODUCT_QUERY,
 } from '../common/graphql.querys';
-import { EMPTY_BURGER } from '../common/consts';
-import { Burger, BurgerValidation } from '../types';
+import { EMPTY_PRODUCT, EMPTY_VALID_PRODUCT } from '../common/consts';
+import { Product, ProductValidation } from '../types';
 
 interface CreateUpdateProps {
   action: 'create' | 'update';
-  burgerValues: Burger;
-  setBurgerValues: React.Dispatch<React.SetStateAction<Burger>>;
-  isBurgerValid: BurgerValidation;
-  setIsBurgerValid: React.Dispatch<React.SetStateAction<BurgerValidation>>;
-  isBurgerTouched: BurgerValidation;
-  setIsBurgerTouched: React.Dispatch<React.SetStateAction<BurgerValidation>>;
-  getBurgers: () => void;
+  productValues: Product;
+  setProductValues: React.Dispatch<React.SetStateAction<Product>>;
+  isProductValid: ProductValidation;
+  setIsProductValid: React.Dispatch<React.SetStateAction<ProductValidation>>;
+  isProductTouched: ProductValidation;
+  setIsProductTouched: React.Dispatch<React.SetStateAction<ProductValidation>>;
+  getProducts: () => void;
 }
 
 const CreateUpdate: React.FC<CreateUpdateProps> = ({
   action,
-  burgerValues,
-  setBurgerValues,
-  isBurgerValid,
-  setIsBurgerValid,
-  isBurgerTouched,
-  setIsBurgerTouched,
-  getBurgers,
+  productValues,
+  setProductValues,
+  isProductValid,
+  setIsProductValid,
+  isProductTouched,
+  setIsProductTouched,
+  getProducts,
 }) => {
+  const { t } = useTranslation();
   const history = useHistory();
-  const { values, setValues, handleChange } = useForm(burgerValues);
+  const { values, setValues, handleChange } = useForm(productValues);
 
-  const [addBurger, { loading: loadingAdd, error: errorAdd }] =
-    useMutation(CREATE_BURGERS_QUERY);
-  const [editBurger, { loading: loadingEdit, error: errorEdit }] =
-    useMutation(UPDATE_BURGER_QUERY);
+  const [addProduct, { loading: loadingAdd, error: errorAdd }] =
+    useMutation(CREATE_PRODUCT_QUERY);
+  const [editProduct, { loading: loadingEdit, error: errorEdit }] =
+    useMutation(UPDATE_PRODUCT_QUERY);
 
-  const title = action === 'create' ? 'Create New Burger' : 'Edit Burger';
-  const buttonLabel = action === 'create' ? 'Create' : 'Update';
+  const title = action === 'create' ? t('createUpdate.createTitle') : t('createUpdate.editTitle');
+  const buttonLabel = action === 'create' ? t('common.create') : t('common.update');
   const loading = loadingAdd || loadingEdit;
   const error = errorAdd || errorEdit;
 
   React.useEffect(() => {
-    setValues(burgerValues);
-  }, [burgerValues, setValues]);
+    setValues(productValues);
+  }, [productValues, setValues]);
 
-  const convertBase64 = async (file: File): Promise<string> => {
+  const compressImage = async (file: File, maxSizeMB: number = 1): Promise<string> => {
     return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        const result = fileReader.result as string;
-        resolve(result.split(',').pop() || '');
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          // Redimensionar si la imagen es muy grande
+          const maxDimension = 1200; // píxeles
+          if (width > height && width > maxDimension) {
+            height = (height * maxDimension) / width;
+            width = maxDimension;
+          } else if (height > maxDimension) {
+            width = (width * maxDimension) / height;
+            height = maxDimension;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          // Comprimir con calidad ajustable
+          let quality = 0.8;
+          const compress = () => {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            const base64 = dataUrl.split(',')[1];
+            const sizeInMB = (base64.length * 3) / 4 / (1024 * 1024);
+
+            // Si aún es muy grande y podemos reducir más la calidad
+            if (sizeInMB > maxSizeMB && quality > 0.3) {
+              quality -= 0.1;
+              compress();
+            } else {
+              resolve(base64);
+            }
+          };
+
+          compress();
+        };
+        img.onerror = reject;
       };
-      fileReader.onerror = (error) => reject(error);
+      reader.onerror = reject;
     });
   };
 
@@ -87,11 +127,12 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
     const file = ev.target.files?.[0];
     if (file) {
       try {
-        const base64 = await convertBase64(file);
+        // Comprimir a máximo 3MB para estar bien por debajo del límite de 4.5MB
+        const base64 = await compressImage(file, 3);
         setValues((prev) => ({ ...prev, img_blob: base64 }));
-        setBurgerValues((prev) => ({ ...prev, img_blob: base64 }));
+        setProductValues((prev) => ({ ...prev, img_blob: base64 }));
       } catch (error) {
-        console.error('Error converting file:', error);
+        console.error(t('createUpdate.errorCompressing'), error);
       }
     }
   };
@@ -100,12 +141,12 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
     const { name, value, type } = ev.target;
     const isValid = type === 'number' ? !isNaN(parseFloat(value)) && value !== '' : value.trim().length > 0;
 
-    setIsBurgerValid((prev) => ({ ...prev, [name]: isValid }));
+    setIsProductValid((prev) => ({ ...prev, [name]: isValid }));
   };
 
   const handleInputChangeLocal = (ev: any) => {
     handleChange(ev);
-    setBurgerValues((prev: any) => {
+    setProductValues((prev: any) => {
       const { name, value, type } = ev.target;
       return {
         ...prev,
@@ -114,39 +155,33 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
     });
   };
 
-  const createUpdateBurger = async () => {
+  const createUpdateProduct = async () => {
     try {
       let data;
       if (action === 'create') {
-        const result = await addBurger({ variables: values });
+        const result = await addProduct({ variables: values });
         data = result.data;
       } else {
-        const result = await editBurger({ variables: values });
+        const result = await editProduct({ variables: values });
         data = result.data;
       }
 
       if (data?.createProduct?._id || data?.updateProduct?._id) {
-        setBurgerValues(EMPTY_BURGER);
-        getBurgers();
+        setProductValues(EMPTY_PRODUCT);
+        getProducts();
         history.push('/home');
       }
     } catch (err) {
-      console.error('Error saving burger:', err);
+      console.error(t('createUpdate.errorSaving'), err);
     }
   };
 
   const isFormValid =
-    isBurgerValid.title && isBurgerValid.description && isBurgerValid.price;
+    isProductValid.title && isProductValid.description && isProductValid.price;
 
   return (
     <BasePage title={title} footer="">
       <IonCard>
-        <IonCardHeader>
-          <IonCardTitle className="ion-text-center">
-            <IonIcon icon={fastFoodOutline} size="large" />
-            <h2>{title}</h2>
-          </IonCardTitle>
-        </IonCardHeader>
         <IonCardContent>
           {error && (
             <IonText color="danger">
@@ -155,12 +190,12 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
           )}
 
           {loading ? (
-            <LoadingSpinner message={`${action === 'create' ? 'Creating' : 'Updating'}...`} />
+            <LoadingSpinner message={action === 'create' ? t('createUpdate.creating') : t('createUpdate.updating')} />
           ) : (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                if (isFormValid) createUpdateBurger();
+                if (isFormValid) createUpdateProduct();
               }}
             >
               <IonList>
@@ -173,14 +208,14 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
                       validateInput(ev);
                     }}
                     name="title"
-                    label="Burger Name"
+                    label={t('createUpdate.productName')}
                     labelPlacement="floating"
-                    className={`${isBurgerValid.title && 'ion-valid'} ${
-                      isBurgerValid.title === false && 'ion-invalid'
-                    } ${isBurgerTouched.title && 'ion-touched'}`}
-                    errorText="Please enter a burger name"
+                    className={`${isProductValid.title && 'ion-valid'} ${
+                      isProductValid.title === false && 'ion-invalid'
+                    } ${isProductTouched.title && 'ion-touched'}`}
+                    errorText={t('createUpdate.errorProductName')}
                     onIonBlur={() =>
-                      setIsBurgerTouched((prev) => ({ ...prev, title: true }))
+                      setIsProductTouched((prev) => ({ ...prev, title: true }))
                     }
                   />
                 </IonItem>
@@ -194,14 +229,14 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
                       validateInput(ev);
                     }}
                     name="description"
-                    label="Description"
+                    label={t('createUpdate.description')}
                     labelPlacement="floating"
-                    className={`${isBurgerValid.description && 'ion-valid'} ${
-                      isBurgerValid.description === false && 'ion-invalid'
-                    } ${isBurgerTouched.description && 'ion-touched'}`}
-                    errorText="Please enter a description"
+                    className={`${isProductValid.description && 'ion-valid'} ${
+                      isProductValid.description === false && 'ion-invalid'
+                    } ${isProductTouched.description && 'ion-touched'}`}
+                    errorText={t('createUpdate.errorDescription')}
                     onIonBlur={() =>
-                      setIsBurgerTouched((prev) => ({ ...prev, description: true }))
+                      setIsProductTouched((prev) => ({ ...prev, description: true }))
                     }
                   />
                 </IonItem>
@@ -215,15 +250,15 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
                       validateInput(ev);
                     }}
                     name="price"
-                    label="Price"
+                    label={t('createUpdate.price')}
                     labelPlacement="floating"
                     type="number"
-                    className={`${isBurgerValid.price && 'ion-valid'} ${
-                      isBurgerValid.price === false && 'ion-invalid'
-                    } ${isBurgerTouched.price && 'ion-touched'}`}
-                    errorText="Please enter a valid price"
+                    className={`${isProductValid.price && 'ion-valid'} ${
+                      isProductValid.price === false && 'ion-invalid'
+                    } ${isProductTouched.price && 'ion-touched'}`}
+                    errorText={t('createUpdate.errorPrice')}
                     onIonBlur={() =>
-                      setIsBurgerTouched((prev) => ({ ...prev, price: true }))
+                      setIsProductTouched((prev) => ({ ...prev, price: true }))
                     }
                   />
                 </IonItem>
@@ -244,13 +279,13 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
                     name="featured"
                     checked={values.featured}
                   >
-                    <IonLabel>Featured Item</IonLabel>
+                    <IonLabel>{t('createUpdate.featuredItem')}</IonLabel>
                   </IonCheckbox>
                 </IonItem>
 
                 <IonItem>
                   <IonIcon icon={imageOutline} slot="start" />
-                  <IonLabel>Image</IonLabel>
+                  <IonLabel>{t('createUpdate.image')}</IonLabel>
                   <input
                     name="image"
                     type="file"
@@ -269,6 +304,21 @@ const CreateUpdate: React.FC<CreateUpdateProps> = ({
                 className="ion-margin-top"
               >
                 {buttonLabel}
+              </IonButton>
+
+              <IonButton
+                color="medium"
+                expand="block"
+                fill="outline"
+                className="ion-margin-top"
+                onClick={() => {
+                  setProductValues(EMPTY_PRODUCT);
+                  setIsProductValid(EMPTY_VALID_PRODUCT);
+                  setIsProductTouched(EMPTY_VALID_PRODUCT);
+                  history.push('/home');
+                }}
+              >
+                {t('common.cancel')}
               </IonButton>
             </form>
           )}

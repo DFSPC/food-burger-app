@@ -1,4 +1,4 @@
-export interface Burger {
+export interface Product {
   _id: string;
   title: string;
   description: string;
@@ -22,7 +22,7 @@ export interface ValidationState {
   [key: string]: boolean;
 }
 
-export interface BurgerValidation {
+export interface ProductValidation {
   title: boolean;
   description: boolean;
   price: boolean;

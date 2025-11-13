@@ -10,12 +10,14 @@ import {
     IonRouterOutlet,
     setupIonicReact
 } from "@ionic/react";
-import { list, add, logIn, personAdd, logOut } from "ionicons/icons";
+import { list, add, logIn, personAdd, logOut, settings } from "ionicons/icons";
 import { IonReactRouter } from "@ionic/react-router";
+import { useTranslation } from 'react-i18next';
 import Home from "./pages/Home";
 import CreateUpdate from "./pages/CreateUpdate";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Settings from "./pages/Settings";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -39,17 +41,17 @@ import "./theme/variables.css";
 import React, { useEffect, useState } from "react";
 
 import {
-    GET_BURGERS_QUERY,
-    DELETE_BURGER_QUERY,
-    CREATE_BURGERS_QUERY,
-    UPDATE_BURGER_QUERY,
+    GET_PRODUCTS_QUERY,
+    DELETE_PRODUCT_QUERY,
+    CREATE_PRODUCT_QUERY,
+    UPDATE_PRODUCT_QUERY,
     LOGIN_USER_QUERY,
     CREATE_USER_QUERY
 } from "./common/graphql.querys";
 
 import {
-    EMPTY_BURGER,
-    EMPTY_VALID_BURGER,
+    EMPTY_PRODUCT,
+    EMPTY_VALID_PRODUCT,
     EMPTY_USER,
     EMPTY_VALID_USER
 } from "./common/consts";
@@ -59,12 +61,13 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 setupIonicReact();
 
 const App: React.FC = () => {
-    const [burgerValues, setBurgerValues] = useState(EMPTY_BURGER);
+    const { t } = useTranslation();
+    const [productValues, setProductValues] = useState(EMPTY_PRODUCT);
     const [userValues, setUserValues] = useState(EMPTY_USER);
     const [alertLogoutOpen, setAlertLogoutOpen] = useState(false);
 
-    const [isBurgerTouched, setIsBurgerTouched] = useState(EMPTY_VALID_BURGER);
-    const [isBurgerValid, setIsBurgerValid] = useState(EMPTY_VALID_BURGER);
+    const [isProductTouched, setIsProductTouched] = useState(EMPTY_VALID_PRODUCT);
+    const [isProductValid, setIsProductValid] = useState(EMPTY_VALID_PRODUCT);
 
     const [isUserTouched, setIsUserTouched] = useState(EMPTY_VALID_USER);
     const [isUserValid, setIsUserValid] = useState(EMPTY_VALID_USER);
@@ -92,42 +95,42 @@ const App: React.FC = () => {
     ] = useMutation(CREATE_USER_QUERY);
 
     const [
-        getBurgers,
+        getProducts,
         {
-            loading: loadingGetBurgers,
-            error: errorGetBurgers,
-            data: dataGetBurgers
+            loading: loadingGetProducts,
+            error: errorGetProducts,
+            data: dataGetProducts
         }
-    ] = useLazyQuery(GET_BURGERS_QUERY, {
+    ] = useLazyQuery(GET_PRODUCTS_QUERY, {
         fetchPolicy: "network-only"
     });
 
     const [
-        addBurger,
+        addProduct,
         {
-            data: dataAddBurger,
-            loading: loadingAddBurger,
-            error: errorAddBurger
+            data: dataAddProduct,
+            loading: loadingAddProduct,
+            error: errorAddProduct
         }
-    ] = useMutation(CREATE_BURGERS_QUERY);
+    ] = useMutation(CREATE_PRODUCT_QUERY);
 
     const [
-        editBurger,
+        editProduct,
         {
-            data: dataEditBurger,
-            loading: loadingEditBurger,
-            error: errorEditBurger
+            data: dataEditProduct,
+            loading: loadingEditProduct,
+            error: errorEditProduct
         }
-    ] = useMutation(UPDATE_BURGER_QUERY);
+    ] = useMutation(UPDATE_PRODUCT_QUERY);
 
     const [
-        deleteBurger,
+        deleteProduct,
         {
-            loading: loadingDeleteBurger,
-            error: errorDeleteBurger,
-            data: dataDeleteBurger
+            loading: loadingDeleteProduct,
+            error: errorDeleteProduct,
+            data: dataDeleteProduct
         }
-    ] = useMutation(DELETE_BURGER_QUERY);
+    ] = useMutation(DELETE_PRODUCT_QUERY);
 
     useEffect(() => {
         if (userValues.token) {
@@ -155,13 +158,13 @@ const App: React.FC = () => {
                             render={() => (
                                 <Home
                                     userValues={userValues}
-                                    setBurgerValues={setBurgerValues}
-                                    getBurgers={getBurgers}
-                                    dataGetBurgers={dataGetBurgers}
-                                    loadingGetBurgers={loadingGetBurgers}
-                                    errorGetBurgers={errorGetBurgers}
-                                    setIsBurgerValid={setIsBurgerValid}
-                                    setIsBurgerTouched={setIsBurgerTouched}
+                                    setProductValues={setProductValues}
+                                    getProducts={getProducts}
+                                    dataGetProducts={dataGetProducts}
+                                    loadingGetProducts={loadingGetProducts}
+                                    errorGetProducts={errorGetProducts}
+                                    setIsProductValid={setIsProductValid}
+                                    setIsProductTouched={setIsProductTouched}
                                 />
                             )}
                             exact={true}
@@ -171,13 +174,13 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"create"}
-                                    burgerValues={burgerValues}
-                                    setBurgerValues={setBurgerValues}
-                                    isBurgerValid={isBurgerValid}
-                                    setIsBurgerValid={setIsBurgerValid}
-                                    isBurgerTouched={isBurgerTouched}
-                                    setIsBurgerTouched={setIsBurgerTouched}
-                                    getBurgers={getBurgers}
+                                    productValues={productValues}
+                                    setProductValues={setProductValues}
+                                    isProductValid={isProductValid}
+                                    setIsProductValid={setIsProductValid}
+                                    isProductTouched={isProductTouched}
+                                    setIsProductTouched={setIsProductTouched}
+                                    getProducts={getProducts}
                                 />
                             )}
                             exact={true}
@@ -187,13 +190,13 @@ const App: React.FC = () => {
                             render={() => (
                                 <CreateUpdate
                                     action={"update"}
-                                    burgerValues={burgerValues}
-                                    setBurgerValues={setBurgerValues}
-                                    isBurgerValid={isBurgerValid}
-                                    setIsBurgerValid={setIsBurgerValid}
-                                    isBurgerTouched={isBurgerTouched}
-                                    setIsBurgerTouched={setIsBurgerTouched}
-                                    getBurgers={getBurgers}
+                                    productValues={productValues}
+                                    setProductValues={setProductValues}
+                                    isProductValid={isProductValid}
+                                    setIsProductValid={setIsProductValid}
+                                    isProductTouched={isProductTouched}
+                                    setIsProductTouched={setIsProductTouched}
+                                    getProducts={getProducts}
                                 />
                             )}
                             exact={true}
@@ -204,7 +207,7 @@ const App: React.FC = () => {
                                 <Login
                                     userValues={userValues}
                                     setUserValues={setUserValues}
-                                    getBurgers={getBurgers}
+                                    getProducts={getProducts}
                                 />
                             )}
                             exact={true}
@@ -214,9 +217,14 @@ const App: React.FC = () => {
                             render={() => (
                                 <Register
                                     setUserValues={setUserValues}
-                                    getBurgers={getBurgers}
+                                    getProducts={getProducts}
                                 />
                             )}
+                            exact={true}
+                        />
+                        <Route
+                            path="/settings"
+                            render={() => <Settings />}
                             exact={true}
                         />
                     </IonRouterOutlet>
@@ -227,30 +235,37 @@ const App: React.FC = () => {
                                 tab="home"
                                 href="/home"
                                 onClick={(ev) => {
-                                    setBurgerValues(EMPTY_BURGER);
-                                    setIsBurgerValid(EMPTY_VALID_BURGER);
-                                    setIsBurgerTouched(EMPTY_VALID_BURGER);
+                                    setProductValues(EMPTY_PRODUCT);
+                                    setIsProductValid(EMPTY_VALID_PRODUCT);
+                                    setIsProductTouched(EMPTY_VALID_PRODUCT);
                                 }}
                             >
                                 <IonIcon icon={list} />
-                                <IonLabel>Burgers</IonLabel>
+                                <IonLabel>{t('menu.products')}</IonLabel>
                             </IonTabButton>
                             {userValues.rol == "admin" ? (
                                 <IonTabButton
                                     tab="create"
                                     href="/create"
                                     onClick={(ev) => {
-                                        setBurgerValues(EMPTY_BURGER);
-                                        setIsBurgerValid(EMPTY_VALID_BURGER);
-                                        setIsBurgerTouched(EMPTY_VALID_BURGER);
+                                        setProductValues(EMPTY_PRODUCT);
+                                        setIsProductValid(EMPTY_VALID_PRODUCT);
+                                        setIsProductTouched(EMPTY_VALID_PRODUCT);
                                     }}
                                 >
                                     <IonIcon icon={add} />
-                                    <IonLabel>Create</IonLabel>
+                                    <IonLabel>{t('menu.create')}</IonLabel>
                                 </IonTabButton>
                             ) : (
                                 <></>
                             )}
+                            <IonTabButton
+                                tab="settings"
+                                href="/settings"
+                            >
+                                <IonIcon icon={settings} />
+                                <IonLabel>{t('menu.settings')}</IonLabel>
+                            </IonTabButton>
                             <IonTabButton
                                 tab="logout"
                                 onClick={(ev) => {
@@ -258,7 +273,7 @@ const App: React.FC = () => {
                                 }}
                             >
                                 <IonIcon icon={logOut} />
-                                <IonLabel>Log Out</IonLabel>
+                                <IonLabel>{t('menu.logout')}</IonLabel>
                             </IonTabButton>
                         </IonTabBar>
                     ) : (
@@ -273,7 +288,7 @@ const App: React.FC = () => {
                                 }}
                             >
                                 <IonIcon icon={logIn} />
-                                <IonLabel>Login</IonLabel>
+                                <IonLabel>{t('menu.login')}</IonLabel>
                             </IonTabButton>
 
                             <IonTabButton
@@ -286,24 +301,32 @@ const App: React.FC = () => {
                                 }}
                             >
                                 <IonIcon icon={personAdd} />
-                                <IonLabel>Register</IonLabel>
+                                <IonLabel>{t('menu.register')}</IonLabel>
+                            </IonTabButton>
+
+                            <IonTabButton
+                                tab="settings"
+                                href="/settings"
+                            >
+                                <IonIcon icon={settings} />
+                                <IonLabel>{t('menu.settings')}</IonLabel>
                             </IonTabButton>
                         </IonTabBar>
                     )}
                 </IonTabs>
                 <IonAlert
                     isOpen={alertLogoutOpen}
-                    header="Logout of App?"
+                    header={t('alerts.logoutTitle')}
                     buttons={[
                         {
-                            text: "Cancel",
+                            text: t('common.cancel'),
                             role: "cancel",
                             handler: () => {
                                 return false;
                             }
                         },
                         {
-                            text: "OK",
+                            text: t('common.ok'),
                             role: "confirm",
                             handler: () => {
                                 logoutUser();

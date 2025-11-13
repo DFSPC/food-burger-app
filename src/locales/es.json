@@ -1,0 +1,84 @@
+{
+  "common": {
+    "welcome": "Bienvenido",
+    "guest": "Invitado",
+    "loading": "Cargando...",
+    "create": "Crear",
+    "update": "Actualizar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "ok": "OK",
+    "save": "Guardar",
+    "back": "Volver"
+  },
+  "menu": {
+    "products": "Productos",
+    "create": "Crear",
+    "logout": "Cerrar Sesión",
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "settings": "Configuración"
+  },
+  "home": {
+    "title": "🍽️ Menú Delicious Food 🍽️",
+    "welcome": "👋 ¡Bienvenido, {{name}}!",
+    "noProducts": "No hay productos disponibles aún. ¡Vuelve más tarde!",
+    "deleteConfirm": "¿Eliminar Producto?",
+    "deleteMessage": "¿Estás seguro de que quieres eliminar este producto?",
+    "errorDeleting": "Error al eliminar producto"
+  },
+  "createUpdate": {
+    "createTitle": "Crear Nuevo Producto",
+    "editTitle": "Editar Producto",
+    "productName": "Nombre del Producto",
+    "description": "Descripción",
+    "price": "Precio",
+    "featuredItem": "Producto Destacado",
+    "image": "Imagen",
+    "errorProductName": "Por favor ingresa el nombre del producto",
+    "errorDescription": "Por favor ingresa una descripción",
+    "errorPrice": "Por favor ingresa un precio válido",
+    "creating": "Creando...",
+    "updating": "Actualizando...",
+    "errorSaving": "Error al guardar producto",
+    "errorCompressing": "Error al comprimir imagen"
+  },
+  "login": {
+    "title": "Iniciar Sesión",
+    "welcomeBack": "¡Bienvenido de Nuevo!",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "invalidEmail": "Correo inválido",
+    "invalidPassword": "Contraseña inválida",
+    "loggingIn": "Iniciando sesión...",
+    "errorLogin": "Error al iniciar sesión"
+  },
+  "register": {
+    "title": "Registrarse",
+    "createAccount": "Crear Cuenta",
+    "fullName": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "phoneNumber": "Número de Teléfono",
+    "invalidFullName": "Nombre completo inválido",
+    "invalidEmail": "Correo inválido",
+    "invalidPassword": "Contraseña inválida",
+    "invalidPhone": "Número de teléfono inválido",
+    "creatingAccount": "Creando cuenta...",
+    "errorRegistration": "Error al registrarse"
+  },
+  "settings": {
+    "title": "Configuración",
+    "language": "Idioma",
+    "selectLanguage": "Seleccionar Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "languageChanged": "Idioma cambiado exitosamente"
+  },
+  "alerts": {
+    "logoutTitle": "¿Cerrar Sesión?",
+    "deleteProduct": "¿Eliminar Producto?",
+    "deleteProductMessage": "¿Estás seguro de que quieres eliminar este producto?"
+  }
+}

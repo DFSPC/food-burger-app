@@ -8,8 +8,6 @@ import {
   IonIcon,
   IonCard,
   IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
 } from '@ionic/react';
 import {
   personOutline,
@@ -19,6 +17,7 @@ import {
 } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
+import { useTranslation } from 'react-i18next';
 import BasePage from '../BasePage';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useForm } from '../hooks/useForm';
@@ -29,10 +28,11 @@ import { User, UserValidation } from '../types';
 
 interface RegisterProps {
   setUserValues: React.Dispatch<React.SetStateAction<User>>;
-  getBurgers: () => void;
+  getProducts: () => void;
 }
 
-const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
+const Register: React.FC<RegisterProps> = ({ setUserValues, getProducts }) => {
+  const { t } = useTranslation();
   const history = useHistory();
   const { values, handleChange } = useForm(EMPTY_USER);
   const { isValid, isTouched, validateInput, markAsTouched } =
@@ -45,7 +45,7 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
       const { data } = await addUser({ variables: values });
       if (data?.createUser) {
         setUserValues(data.createUser);
-        getBurgers();
+        getProducts();
         history.push('/home');
       }
     } catch (err) {
@@ -57,13 +57,8 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
     isValid.email && isValid.password && isValid.fullname && isValid.cellphone;
 
   return (
-    <BasePage title="Register" footer="">
+    <BasePage title={t('register.title')} footer="">
       <IonCard>
-        <IonCardHeader>
-          <IonCardTitle className="ion-text-center">
-            <h1>Create Account</h1>
-          </IonCardTitle>
-        </IonCardHeader>
         <IonCardContent>
           {error && (
             <IonText color="danger">
@@ -72,7 +67,7 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
           )}
 
           {loading ? (
-            <LoadingSpinner message="Creating account..." />
+            <LoadingSpinner message={t('register.creatingAccount')} />
           ) : (
             <form
               onSubmit={(e) => {
@@ -90,12 +85,12 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
                       validateInput(ev);
                     }}
                     name="fullname"
-                    label="Full Name"
+                    label={t('register.fullName')}
                     labelPlacement="floating"
                     className={`${isValid.fullname && 'ion-valid'} ${
                       isValid.fullname === false && 'ion-invalid'
                     } ${isTouched.fullname && 'ion-touched'}`}
-                    errorText="Invalid Full Name"
+                    errorText={t('register.invalidFullName')}
                     onIonBlur={() => markAsTouched('fullname')}
                   />
                 </IonItem>
@@ -109,14 +104,14 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
                       validateInput(ev);
                     }}
                     name="email"
-                    label="Email"
+                    label={t('register.email')}
                     labelPlacement="floating"
                     type="email"
                     className={`${isValid.email && 'ion-valid'} ${
                       isValid.email === false && 'ion-invalid'
                     } ${isTouched.email && 'ion-touched'}`}
                     placeholder="email@domain.com"
-                    errorText="Invalid Email"
+                    errorText={t('register.invalidEmail')}
                     onIonBlur={() => markAsTouched('email')}
                   />
                 </IonItem>
@@ -130,13 +125,13 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
                       validateInput(ev);
                     }}
                     name="password"
-                    label="Password"
+                    label={t('register.password')}
                     labelPlacement="floating"
                     type="password"
                     className={`${isValid.password && 'ion-valid'} ${
                       isValid.password === false && 'ion-invalid'
                     } ${isTouched.password && 'ion-touched'}`}
-                    errorText="Invalid Password"
+                    errorText={t('register.invalidPassword')}
                     onIonBlur={() => markAsTouched('password')}
                   />
                 </IonItem>
@@ -150,13 +145,13 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
                       validateInput(ev);
                     }}
                     name="cellphone"
-                    label="Phone Number"
+                    label={t('register.phoneNumber')}
                     labelPlacement="floating"
                     type="number"
                     className={`${isValid.cellphone && 'ion-valid'} ${
                       isValid.cellphone === false && 'ion-invalid'
                     } ${isTouched.cellphone && 'ion-touched'}`}
-                    errorText="Invalid Phone Number"
+                    errorText={t('register.invalidPhone')}
                     placeholder="3XXXXXXXXX"
                     onIonBlur={() => markAsTouched('cellphone')}
                   />
@@ -170,7 +165,7 @@ const Register: React.FC<RegisterProps> = ({ setUserValues, getBurgers }) => {
                 expand="block"
                 className="ion-margin-top"
               >
-                Register
+                {t('register.title')}
               </IonButton>
             </form>
           )}
