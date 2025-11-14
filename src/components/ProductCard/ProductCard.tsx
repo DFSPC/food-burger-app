@@ -17,7 +17,8 @@ import {
 } from '@ionic/react';
 import { pricetagOutline, star } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
-import { Product } from '../types';
+import { Product } from '../../types';
+import './ProductCard.css';
 
 interface ProductCardProps {
   product: Product;
@@ -39,16 +40,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin, onEdit, onD
           <IonChip
             color="warning"
             slot="end"
-            style={{
-              boxShadow: '0 4px 12px rgba(255, 204, 0, 0.6)',
-              padding: '10px',
-              background: 'linear-gradient(135deg, #ffcc00 0%, #ff9500 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            className="product-card-featured-chip"
           >
-            <IonIcon icon={star} style={{ color: '#000000', fontSize: '24px', filter: 'drop-shadow(0 2px 4px rgba(255,255,255,0.8))', margin: 0 }} />
+            <IonIcon icon={star} className="product-card-star-icon" />
           </IonChip>
         )}
       </IonItem>
@@ -58,26 +52,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, isAdmin, onEdit, onD
             <img
               src={product.img_url}
               alt={product.title}
-              style={{
-                width: '100%',
-                height: 'auto',
-                maxHeight: '300px',
-                objectFit: 'cover',
-              }}
+              className="product-card-image"
             />
           )}
-          <IonCardHeader style={{ background: 'linear-gradient(135deg, #ffcc00 0%, #ffd11a 100%)', padding: '16px' }}>
-            <IonCardTitle style={{
-              fontSize: '32px',
-              fontWeight: '800',
-              color: '#000000',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              textShadow: '0 2px 4px rgba(255,255,255,0.5)'
-            }}>
-              <IonIcon icon={pricetagOutline} style={{ fontSize: '28px' }} />
+          <IonCardHeader className="product-card-header">
+            <IonCardTitle className="product-card-title">
+              <IonIcon icon={pricetagOutline} className="product-card-price-icon" />
               ${product.price}
             </IonCardTitle>
           </IonCardHeader>

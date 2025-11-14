@@ -9,12 +9,13 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import BasePage from '../BasePage';
-import ProductCard from '../components/ProductCard';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { DELETE_PRODUCT_QUERY } from '../common/graphql.querys';
-import { FULL_VALID_PRODUCT } from '../common/consts';
-import { User, Product } from '../types';
+import BasePage from '../../BasePage';
+import ProductCard from '../../components/ProductCard';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { DELETE_PRODUCT_QUERY } from '../../common/graphql.querys';
+import { FULL_VALID_PRODUCT } from '../../common/consts';
+import { User, Product } from '../../types';
+import './Home.css';
 
 interface HomeProps {
   userValues: User;

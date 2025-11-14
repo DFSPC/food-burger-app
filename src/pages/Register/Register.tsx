@@ -18,13 +18,14 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import BasePage from '../BasePage';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { useForm } from '../hooks/useForm';
-import { useValidation } from '../hooks/useValidation';
-import { CREATE_USER_QUERY } from '../common/graphql.querys';
-import { EMPTY_USER, EMPTY_VALID_USER } from '../common/consts';
-import { User, UserValidation } from '../types';
+import './Register.css';
+import BasePage from '../../BasePage';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { useForm } from '../../hooks/useForm';
+import { useValidation } from '../../hooks/useValidation';
+import { CREATE_USER_QUERY } from '../../common/graphql.querys';
+import { EMPTY_USER, EMPTY_VALID_USER } from '../../common/consts';
+import { User, UserValidation } from '../../types';
 
 interface RegisterProps {
   setUserValues: React.Dispatch<React.SetStateAction<User>>;

@@ -13,13 +13,14 @@ import { mailOutline, lockClosedOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router-dom';
 import { useLazyQuery } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import BasePage from '../BasePage';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { useForm } from '../hooks/useForm';
-import { useValidation } from '../hooks/useValidation';
-import { LOGIN_USER_QUERY } from '../common/graphql.querys';
-import { EMPTY_USER, EMPTY_VALID_USER } from '../common/consts';
-import { User, UserValidation } from '../types';
+import BasePage from '../../BasePage';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { useForm } from '../../hooks/useForm';
+import { useValidation } from '../../hooks/useValidation';
+import { LOGIN_USER_QUERY } from '../../common/graphql.querys';
+import './Login.css';
+import { EMPTY_USER, EMPTY_VALID_USER } from '../../common/consts';
+import { User, UserValidation } from '../../types';
 
 interface LoginProps {
   userValues: User;

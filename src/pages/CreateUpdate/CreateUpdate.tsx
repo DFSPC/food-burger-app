@@ -18,19 +18,20 @@ import {
   imageOutline,
   starOutline,
 } from 'ionicons/icons';
+import './CreateUpdate.css';
 import { useHistory } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import { useTranslation } from 'react-i18next';
-import BasePage from '../BasePage';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { useForm } from '../hooks/useForm';
-import { useValidation } from '../hooks/useValidation';
+import BasePage from '../../BasePage';
+import LoadingSpinner from '../../components/LoadingSpinner';
+import { useForm } from '../../hooks/useForm';
+import { useValidation } from '../../hooks/useValidation';
 import {
   CREATE_PRODUCT_QUERY,
   UPDATE_PRODUCT_QUERY,
-} from '../common/graphql.querys';
-import { EMPTY_PRODUCT, EMPTY_VALID_PRODUCT } from '../common/consts';
-import { Product, ProductValidation } from '../types';
+} from '../../common/graphql.querys';
+import { EMPTY_PRODUCT, EMPTY_VALID_PRODUCT } from '../../common/consts';
+import { Product, ProductValidation } from '../../types';
 
 interface CreateUpdateProps {
   action: 'create' | 'update';

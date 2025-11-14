@@ -1,5 +1,6 @@
 import React from 'react';
 import { IonSpinner, IonText } from '@ionic/react';
+import './LoadingSpinner.css';
 
 interface LoadingSpinnerProps {
   message?: string;

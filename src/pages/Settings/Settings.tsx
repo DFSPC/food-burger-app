@@ -11,7 +11,8 @@ import {
 } from '@ionic/react';
 import { checkmarkCircle } from 'ionicons/icons';
 import { useTranslation } from 'react-i18next';
-import BasePage from '../BasePage';
+import BasePage from '../../BasePage';
+import './Settings.css';
 
 const Settings: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -28,7 +29,7 @@ const Settings: React.FC = () => {
       <IonCard>
         <IonCardContent>
           <IonText color="medium" className="ion-text-center">
-            <p style={{ marginBottom: '20px' }}>{t('settings.selectLanguage')}</p>
+            <p className="settings-select-language-text">{t('settings.selectLanguage')}</p>
           </IonText>
 
           <IonGrid>
@@ -39,17 +40,11 @@ const Settings: React.FC = () => {
                   fill={currentLanguage === 'en' ? 'solid' : 'outline'}
                   color={currentLanguage === 'en' ? 'primary' : 'medium'}
                   onClick={() => changeLanguage('en')}
-                  style={{
-                    height: '80px',
-                    fontSize: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                  }}
+                  className="settings-language-button"
                 >
                   <div>{t('settings.english')}</div>
                   {currentLanguage === 'en' && (
-                    <IonIcon icon={checkmarkCircle} style={{ fontSize: '20px' }} />
+                    <IonIcon icon={checkmarkCircle} className="settings-checkmark-icon" />
                   )}
                 </IonButton>
               </IonCol>
@@ -59,17 +54,11 @@ const Settings: React.FC = () => {
                   fill={currentLanguage === 'es' ? 'solid' : 'outline'}
                   color={currentLanguage === 'es' ? 'primary' : 'medium'}
                   onClick={() => changeLanguage('es')}
-                  style={{
-                    height: '80px',
-                    fontSize: '16px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
-                  }}
+                  className="settings-language-button"
                 >
                   <div>{t('settings.spanish')}</div>
                   {currentLanguage === 'es' && (
-                    <IonIcon icon={checkmarkCircle} style={{ fontSize: '20px' }} />
+                    <IonIcon icon={checkmarkCircle} className="settings-checkmark-icon" />
                   )}
                 </IonButton>
               </IonCol>

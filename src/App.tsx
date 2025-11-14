@@ -1,4 +1,8 @@
+import React, { useEffect, useState } from "react";
 import { Redirect, Route } from "react-router-dom";
+import { IonReactRouter } from "@ionic/react-router";
+import { useTranslation } from 'react-i18next';
+import { useLazyQuery } from "@apollo/client";
 import {
     IonApp,
     IonAlert,
@@ -11,13 +15,15 @@ import {
     setupIonicReact
 } from "@ionic/react";
 import { list, add, logIn, personAdd, logOut, settings } from "ionicons/icons";
-import { IonReactRouter } from "@ionic/react-router";
-import { useTranslation } from 'react-i18next';
+
 import Home from "./pages/Home";
 import CreateUpdate from "./pages/CreateUpdate";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Settings from "./pages/Settings";
+
+import { GET_PRODUCTS_QUERY } from "./common/graphql.querys";
+import { EMPTY_PRODUCT, EMPTY_VALID_PRODUCT, EMPTY_USER } from "./common/consts";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -38,26 +44,6 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 
-import React, { useEffect, useState } from "react";
-
-import {
-    GET_PRODUCTS_QUERY,
-    DELETE_PRODUCT_QUERY,
-    CREATE_PRODUCT_QUERY,
-    UPDATE_PRODUCT_QUERY,
-    LOGIN_USER_QUERY,
-    CREATE_USER_QUERY
-} from "./common/graphql.querys";
-
-import {
-    EMPTY_PRODUCT,
-    EMPTY_VALID_PRODUCT,
-    EMPTY_USER,
-    EMPTY_VALID_USER
-} from "./common/consts";
-
-import { useLazyQuery, useMutation } from "@apollo/client";
-
 setupIonicReact();
 
 const App: React.FC = () => {
@@ -69,30 +55,11 @@ const App: React.FC = () => {
     const [isProductTouched, setIsProductTouched] = useState(EMPTY_VALID_PRODUCT);
     const [isProductValid, setIsProductValid] = useState(EMPTY_VALID_PRODUCT);
 
-    const [isUserTouched, setIsUserTouched] = useState(EMPTY_VALID_USER);
-    const [isUserValid, setIsUserValid] = useState(EMPTY_VALID_USER);
-
     const logoutUser = () => {
         setUserValues(EMPTY_USER);
         localStorage.setItem("userValues", JSON.stringify(EMPTY_USER));
         window.location.href = "/login";
     };
-
-    const [
-        getUserLogin,
-        {
-            loading: loadingUserLogin,
-            error: errorUserLogin,
-            data: dataUserLogin
-        }
-    ] = useLazyQuery(LOGIN_USER_QUERY, {
-        fetchPolicy: "network-only"
-    });
-
-    const [
-        addUser,
-        { loading: loadingAddUser, error: errorAddUser, data: dataAddUser }
-    ] = useMutation(CREATE_USER_QUERY);
 
     const [
         getProducts,
@@ -104,33 +71,6 @@ const App: React.FC = () => {
     ] = useLazyQuery(GET_PRODUCTS_QUERY, {
         fetchPolicy: "network-only"
     });
-
-    const [
-        addProduct,
-        {
-            data: dataAddProduct,
-            loading: loadingAddProduct,
-            error: errorAddProduct
-        }
-    ] = useMutation(CREATE_PRODUCT_QUERY);
-
-    const [
-        editProduct,
-        {
-            data: dataEditProduct,
-            loading: loadingEditProduct,
-            error: errorEditProduct
-        }
-    ] = useMutation(UPDATE_PRODUCT_QUERY);
-
-    const [
-        deleteProduct,
-        {
-            loading: loadingDeleteProduct,
-            error: errorDeleteProduct,
-            data: dataDeleteProduct
-        }
-    ] = useMutation(DELETE_PRODUCT_QUERY);
 
     useEffect(() => {
         if (userValues.token) {
@@ -234,7 +174,7 @@ const App: React.FC = () => {
                             <IonTabButton
                                 tab="home"
                                 href="/home"
-                                onClick={(ev) => {
+                                onClick={() => {
                                     setProductValues(EMPTY_PRODUCT);
                                     setIsProductValid(EMPTY_VALID_PRODUCT);
                                     setIsProductTouched(EMPTY_VALID_PRODUCT);
@@ -243,11 +183,11 @@ const App: React.FC = () => {
                                 <IonIcon icon={list} />
                                 <IonLabel>{t('menu.products')}</IonLabel>
                             </IonTabButton>
-                            {userValues.rol == "admin" ? (
+                            {userValues.rol === "admin" && (
                                 <IonTabButton
                                     tab="create"
                                     href="/create"
-                                    onClick={(ev) => {
+                                    onClick={() => {
                                         setProductValues(EMPTY_PRODUCT);
                                         setIsProductValid(EMPTY_VALID_PRODUCT);
                                         setIsProductTouched(EMPTY_VALID_PRODUCT);
@@ -256,8 +196,6 @@ const App: React.FC = () => {
                                     <IonIcon icon={add} />
                                     <IonLabel>{t('menu.create')}</IonLabel>
                                 </IonTabButton>
-                            ) : (
-                                <></>
                             )}
                             <IonTabButton
                                 tab="settings"
@@ -268,9 +206,7 @@ const App: React.FC = () => {
                             </IonTabButton>
                             <IonTabButton
                                 tab="logout"
-                                onClick={(ev) => {
-                                    setAlertLogoutOpen(true);
-                                }}
+                                onClick={() => setAlertLogoutOpen(true)}
                             >
                                 <IonIcon icon={logOut} />
                                 <IonLabel>{t('menu.logout')}</IonLabel>
@@ -281,10 +217,8 @@ const App: React.FC = () => {
                             <IonTabButton
                                 tab="login"
                                 href="/login"
-                                onClick={(ev) => {
+                                onClick={() => {
                                     setUserValues(EMPTY_USER);
-                                    setIsUserValid(EMPTY_VALID_USER);
-                                    setIsUserTouched(EMPTY_VALID_USER);
                                 }}
                             >
                                 <IonIcon icon={logIn} />
@@ -294,10 +228,8 @@ const App: React.FC = () => {
                             <IonTabButton
                                 tab="register"
                                 href="/register"
-                                onClick={(ev) => {
+                                onClick={() => {
                                     setUserValues(EMPTY_USER);
-                                    setIsUserValid(EMPTY_VALID_USER);
-                                    setIsUserTouched(EMPTY_VALID_USER);
                                 }}
                             >
                                 <IonIcon icon={personAdd} />
